@@ -3,16 +3,16 @@
 namespace Movement
 {
     [RequireComponent(typeof(Animator))]
-    public class AnimatorKnightController : MonoBehaviour
+    public class PlayerAnimator : MonoBehaviour
     {
-        [SerializeField, Range(0f, 1.5f)] private float _weight = 0.5f;
+        [SerializeField, Min(0f)] private float _weight = 0.25f;
         [SerializeField] private PlayerMovement _playerMovement;
 
         private Animator _animator;
     
-        private static readonly int EquipsWeight = Animator.StringToHash("EquipsWeight");
-        private static readonly int IsDodging = Animator.StringToHash("IsDodging");
-        private static readonly int IsMoving = Animator.StringToHash("IsMoving");
+        private static readonly int EquipsWeight = Animator.StringToHash(nameof(EquipsWeight));
+        private static readonly int IsDodging = Animator.StringToHash(nameof(IsDodging));
+        private static readonly int IsMoving = Animator.StringToHash(nameof(IsMoving));
 
         private void OnEnable()
         {
@@ -44,6 +44,8 @@ namespace Movement
 
         private void OnStepBacking() => _animator.SetBool(IsDodging, true);
 
+        #region Animation
         private void OnDodged() => _animator.SetBool(IsDodging, false);
+        #endregion
     }
 }

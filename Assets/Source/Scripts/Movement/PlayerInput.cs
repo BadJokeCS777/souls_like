@@ -7,9 +7,10 @@ namespace Movement
     {
         [SerializeField] private float _dodgePressingTime = 0.25f;
 
-        private bool _isJumpPressed = false;
+        private bool _isDodgePressed = false;
         private float _dodgePressedTime = 0f;
         private Vector3 _direction = Vector3.zero;
+        private Transform _camera;
 
         private const string HorizontalAxis = "Horizontal";
         private const string VerticalAxis = "Vertical";
@@ -19,9 +20,19 @@ namespace Movement
         public event Action Staying;
         public event Action Dodging;
 
-        public Vector3 Direction => _direction;
+        public Vector3 Direction
+        {
+            get
+            {
+                Vector3 direction = _camera.forward * _direction.z + _camera.right * _direction.x;
+                direction.y = 0f;
+                return direction.normalized;
+            }
+        }
         private bool IsDodgeEnabled => _dodgePressedTime > 0f && _dodgePressedTime < _dodgePressingTime;
-    
+
+        private void Awake() => _camera = Camera.main.transform;
+
         private void Update()
         {
             _direction.x = Input.GetAxis(HorizontalAxis);
@@ -31,20 +42,20 @@ namespace Movement
             {
                 _dodgePressedTime += Time.deltaTime;
 
-                if (_isJumpPressed == false)
+                if (_isDodgePressed == false)
                 {
-                    _isJumpPressed = true;
+                    _isDodgePressed = true;
                     _dodgePressedTime = 0f;
                 }
             }
             else
             {
-                _isJumpPressed = false;
+                _isDodgePressed = false;
             }
         
             if (_direction.sqrMagnitude > 0f)
             {
-                if (_isJumpPressed == false && IsDodgeEnabled)
+                if (_isDodgePressed == false && IsDodgeEnabled)
                 {
                     _dodgePressedTime = 0f;
                     Dodging?.Invoke();
@@ -55,7 +66,7 @@ namespace Movement
                 return;
             }
         
-            if (_isJumpPressed && _dodgePressedTime < _dodgePressingTime)
+            if (_isDodgePressed && _dodgePressedTime < _dodgePressingTime)
             {
                 Dodging?.Invoke();
                 return;

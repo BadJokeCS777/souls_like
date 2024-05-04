@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using UnityEngine;
 
 namespace Movement
@@ -7,25 +6,21 @@ namespace Movement
     public class PlayerMovement : MonoBehaviour
     {
         [SerializeField] private float _speed = 3f;
-        [SerializeField, Range(0.01f, 1f)] private float _rotationSpeed = 0.5f;
+        [SerializeField, Range(0.01f, 1f)] private float _rotationSpeedRatio = 0.5f;
         [SerializeField] private PlayerInput _input;
         [SerializeField] private Transform _model;
         [SerializeField] private float _rollingDistance = 3.5f;
         [SerializeField] private float _stepBackDistance = 1f;
 
-        private MovementState _state;
-        private Transform _camera;
+        private float _dodgeDistance;
+        private float _dodgeDistanceProgress;
+        private Vector3 _dodgeDirection;
+        private MovementState _state = MovementState.Staying;
 
         public event Action Moving;
         public event Action Staying;
         public event Action Rolling;
         public event Action StepBacking;
-
-        private void Awake()
-        {
-            _state = MovementState.Staying;
-            _camera = Camera.main.transform;
-        }
 
         private void OnEnable()
         {
@@ -39,6 +34,23 @@ namespace Movement
             _input.Moving -= OnMoving;
             _input.Staying -= OnStaying;
             _input.Dodging -= OnDodging;
+        }
+
+        private void Update()
+        {
+            switch (_state)
+            {
+                case MovementState.Staying:
+                    break;
+                case MovementState.Moving:
+                    SelfMoving();
+                    break;
+                case MovementState.Dodging:
+                    Dodging();
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
         }
 
         private void OnStaying()
@@ -55,7 +67,7 @@ namespace Movement
             if (_state is MovementState.Moving or MovementState.Dodging)
                 return;
 
-            StartCoroutine(Movement());
+            _state = MovementState.Moving;
             Moving?.Invoke();
         }
 
@@ -65,66 +77,56 @@ namespace Movement
                 return;
 
             if (_input.Direction.sqrMagnitude > 0f)
-            {
                 OnRolling();
-                return;
-            }
-        
-            OnStepBacking();
+            else
+                OnStepBacking();
+
+            _dodgeDistanceProgress = 0f;
+            _state = MovementState.Dodging;
         }
     
         private void OnRolling()
         {
-            StartCoroutine(Dodging(GetDirection(), _rollingDistance));
+            SetDodgeParams(_rollingDistance, _input.Direction);
             Rolling?.Invoke();
         }
 
         private void OnStepBacking()
         {
-            StartCoroutine(Dodging(-_model.forward, _stepBackDistance));
+            SetDodgeParams(_stepBackDistance, -_model.forward);
             StepBacking?.Invoke();
         }
 
-        private IEnumerator Movement()
+        private void SetDodgeParams(float distance, Vector3 direction)
         {
-            _state = MovementState.Moving;
-        
-            while (_state == MovementState.Moving)
-            {
-                Vector3 direction = GetDirection();
-                transform.Translate(direction * (_speed * Time.deltaTime));
+            _dodgeDistance = distance;
+            _dodgeDirection = direction;
+        }
 
-                if (direction.Equals(Vector3.zero) == false)
-                {
-                    _model.rotation = Quaternion.Slerp(_model.rotation, Quaternion.LookRotation(direction), _rotationSpeed);
-                }
+        private void SelfMoving()
+        {
+            Vector3 direction = _input.Direction;
+
+            if (direction.sqrMagnitude <= 0f)
+                return;
             
-                yield return null;
-            }   
+            transform.Translate(direction * (_speed * Time.deltaTime));
+            Quaternion targetRotation = Quaternion.LookRotation(direction);
+            _model.rotation = Quaternion.Slerp(_model.rotation, targetRotation, _rotationSpeedRatio);
         }
 
-        private Vector3 GetDirection()
+        private void Dodging()
         {
-            Vector3 direction = _camera.forward * _input.Direction.z + _camera.right * _input.Direction.x;
-            direction.y = 0f;
-            return direction.normalized;
-        }
-
-        private IEnumerator Dodging(Vector3 direction, float distance)
-        {
-            _state = MovementState.Dodging;
-        
-            float travelled = 0f;
-        
-            while (travelled < distance)
+            if (_dodgeDistanceProgress < _dodgeDistance)
             {
-                Vector3 offset = direction * (_speed * Time.deltaTime);
+                Vector3 offset = _dodgeDirection * (_speed * Time.deltaTime);
                 transform.Translate(offset);
-                travelled += offset.magnitude;
-                yield return null;
+                _dodgeDistanceProgress += offset.magnitude;
             }
-        
-            _state = MovementState.Staying;
+            else
+            {
+                _state = MovementState.Staying;
+            }
         }
     }
 }
