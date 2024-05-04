@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 8247262199767146940}
   - component: {fileID: 1216140222145853486}
   m_Layer: 0
-  m_Name: Paladin
+  m_Name: Character
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -117,7 +117,6 @@ MonoBehaviour:
   _model: {fileID: 7188305045843375806}
   _rollingDistance: 3.5
   _stepBackDistance: 1
-  _camera: {fileID: 0}
 --- !u!1001 &7226944965167354197
 PrefabInstance:
   m_ObjectHideFlags: 0
