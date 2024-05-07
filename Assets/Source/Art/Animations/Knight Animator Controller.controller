@@ -64,9 +64,6 @@ AnimatorStateTransition:
   - m_ConditionMode: 1
     m_ConditionEvent: IsMoving
     m_EventTreshold: 0
-  - m_ConditionMode: 1
-    m_ConditionEvent: IsDodging
-    m_EventTreshold: 0
   - m_ConditionMode: 3
     m_ConditionEvent: EquipsWeight
     m_EventTreshold: 0.5
@@ -176,9 +173,6 @@ AnimatorStateTransition:
   m_Conditions:
   - m_ConditionMode: 1
     m_ConditionEvent: IsMoving
-    m_EventTreshold: 0
-  - m_ConditionMode: 1
-    m_ConditionEvent: IsDodging
     m_EventTreshold: 0
   - m_ConditionMode: 4
     m_ConditionEvent: EquipsWeight

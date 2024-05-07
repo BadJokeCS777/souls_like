@@ -14,20 +14,24 @@ namespace Movement
         private static readonly int IsDodging = Animator.StringToHash(nameof(IsDodging));
         private static readonly int IsMoving = Animator.StringToHash(nameof(IsMoving));
 
+        private void OnValidate()
+        {
+            if (_animator != null)
+                _animator.SetFloat(EquipsWeight, _weight);
+        }
+
         private void OnEnable()
         {
             _playerMovement.Moving += OnMoving;
             _playerMovement.Staying += OnStaying;
-            _playerMovement.Rolling += OnRolling;
-            _playerMovement.StepBacking += OnStepBacking;
+            _playerMovement.Dodging += OnDodging;
         }
 
         private void OnDisable()
         {
             _playerMovement.Moving -= OnMoving;
             _playerMovement.Staying -= OnStaying;
-            _playerMovement.Rolling -= OnRolling;
-            _playerMovement.StepBacking -= OnStepBacking;
+            _playerMovement.Dodging -= OnDodging;
         }
 
         private void Start() => _animator = GetComponent<Animator>();
@@ -36,13 +40,11 @@ namespace Movement
 
         private void OnStaying() => _animator.SetBool(IsMoving, false);
 
-        private void OnRolling()
+        private void OnDodging()
         {
-            _animator.SetFloat(EquipsWeight, _weight);
+            Debug.Log("Animator Dodge");
             _animator.SetBool(IsDodging, true);
         }
-
-        private void OnStepBacking() => _animator.SetBool(IsDodging, true);
 
         #region Animation
         private void OnDodged() => _animator.SetBool(IsDodging, false);

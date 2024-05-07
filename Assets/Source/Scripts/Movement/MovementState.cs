@@ -2,8 +2,8 @@
 {
     public enum MovementState
     {
-        Staying,
-        Moving,
-        Dodging
+        Stay,
+        Move,
+        Dodge
     }
 }

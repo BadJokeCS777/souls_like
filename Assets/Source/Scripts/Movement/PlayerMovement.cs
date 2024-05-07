@@ -15,12 +15,11 @@ namespace Movement
         private float _dodgeDistance;
         private float _dodgeDistanceProgress;
         private Vector3 _dodgeDirection;
-        private MovementState _state = MovementState.Staying;
+        private MovementState _state = MovementState.Stay;
 
         public event Action Moving;
         public event Action Staying;
-        public event Action Rolling;
-        public event Action StepBacking;
+        public event Action Dodging;
 
         private void OnEnable()
         {
@@ -40,13 +39,13 @@ namespace Movement
         {
             switch (_state)
             {
-                case MovementState.Staying:
+                case MovementState.Stay:
                     break;
-                case MovementState.Moving:
+                case MovementState.Move:
                     SelfMoving();
                     break;
-                case MovementState.Dodging:
-                    Dodging();
+                case MovementState.Dodge:
+                    SelfDodging();
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
@@ -55,52 +54,43 @@ namespace Movement
 
         private void OnStaying()
         {
-            if (_state == MovementState.Dodging)
+            if (_state == MovementState.Dodge)
                 return;
 
-            _state = MovementState.Staying;
+            _state = MovementState.Stay;
             Staying?.Invoke();
         }
 
         private void OnMoving()
         {
-            if (_state is MovementState.Moving or MovementState.Dodging)
+            if (_state is MovementState.Move or MovementState.Dodge)
                 return;
 
-            _state = MovementState.Moving;
+            _state = MovementState.Move;
             Moving?.Invoke();
         }
 
         private void OnDodging()
         {
-            if (_state == MovementState.Dodging)
+            if (_state == MovementState.Dodge)
                 return;
 
             if (_input.Direction.sqrMagnitude > 0f)
-                OnRolling();
+                StartDodging(_rollingDistance, _input.Direction);
             else
-                OnStepBacking();
+                StartDodging(_stepBackDistance, -_model.forward);
 
             _dodgeDistanceProgress = 0f;
-            _state = MovementState.Dodging;
+            _state = MovementState.Dodge;
         }
     
-        private void OnRolling()
-        {
-            SetDodgeParams(_rollingDistance, _input.Direction);
-            Rolling?.Invoke();
-        }
-
-        private void OnStepBacking()
-        {
-            SetDodgeParams(_stepBackDistance, -_model.forward);
-            StepBacking?.Invoke();
-        }
-
-        private void SetDodgeParams(float distance, Vector3 direction)
+        private void StartDodging(float distance, Vector3 direction)
         {
             _dodgeDistance = distance;
             _dodgeDirection = direction;
+            
+            Debug.Log("Movement Dodge");
+            Dodging?.Invoke();
         }
 
         private void SelfMoving()
@@ -115,7 +105,7 @@ namespace Movement
             _model.rotation = Quaternion.Slerp(_model.rotation, targetRotation, _rotationSpeedRatio);
         }
 
-        private void Dodging()
+        private void SelfDodging()
         {
             if (_dodgeDistanceProgress < _dodgeDistance)
             {
@@ -125,7 +115,7 @@ namespace Movement
             }
             else
             {
-                _state = MovementState.Staying;
+                _state = MovementState.Stay;
             }
         }
     }

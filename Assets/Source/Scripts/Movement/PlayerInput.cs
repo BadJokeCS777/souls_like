@@ -68,6 +68,7 @@ namespace Movement
         
             if (_isDodgePressed && _dodgePressedTime < _dodgePressingTime)
             {
+                Debug.Log("Input Dodge");
                 Dodging?.Invoke();
                 return;
             }
