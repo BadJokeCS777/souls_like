@@ -1,5 +1,7 @@
 ﻿using System;
+using Input;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 namespace Movement
 {
@@ -7,7 +9,6 @@ namespace Movement
     {
         [SerializeField] private float _speed = 3f;
         [SerializeField, Range(0.01f, 1f)] private float _rotationSpeedRatio = 0.5f;
-        [SerializeField] private PlayerInput _input;
         [SerializeField] private Transform _model;
         [SerializeField] private float _rollingDistance = 3.5f;
         [SerializeField] private float _stepBackDistance = 1f;
@@ -17,24 +18,45 @@ namespace Movement
         private Vector3 _dodgeDirection;
         private MovementState _state = MovementState.Stay;
 
+        private GameInput _gameInput;
+        private Transform _camera;
+        private Vector3 _direction;
+
         public event Action Moving;
         public event Action Staying;
         public event Action Dodging;
 
-        public bool IsMoving => _input.Direction.sqrMagnitude > 0f;
+        public bool IsMoving => _direction.sqrMagnitude > 0f;
+        
+        private Vector3 Direction
+        {
+            get
+            {
+                Vector3 direction = _camera.forward * _direction.z + _camera.right * _direction.x;
+                direction.y = 0f;
+                return direction.normalized;
+            }
+        }
+        
+        private void Awake()
+        {
+            _camera = Camera.main.transform;
+            _gameInput = new GameInput();
+        }
 
         private void OnEnable()
         {
-            _input.Moving += OnMoving;
-            _input.Staying += OnStaying;
-            _input.Dodging += OnDodging;
+            _gameInput.Enable();
+            _gameInput.Player.Dodge.performed += OnDodging;
+            _gameInput.Player.Move.performed += OnMoving;
+            _gameInput.Player.Move.canceled += OnStaying;
         }
 
         private void OnDisable()
         {
-            _input.Moving -= OnMoving;
-            _input.Staying -= OnStaying;
-            _input.Dodging -= OnDodging;
+            _gameInput.Player.Dodge.performed -= OnDodging;
+            _gameInput.Player.Move.performed -= OnMoving;
+            _gameInput.Player.Move.canceled -= OnStaying;
         }
 
         private void Update()
@@ -54,17 +76,21 @@ namespace Movement
             }
         }
 
-        private void OnStaying()
+        private void OnStaying(InputAction.CallbackContext ctx)
         {
             if (_state == MovementState.Dodge)
                 return;
 
+            _direction = Vector3.zero;
             _state = MovementState.Stay;
             Staying?.Invoke();
         }
 
-        private void OnMoving()
+        private void OnMoving(InputAction.CallbackContext ctx)
         {
+            Vector2 rawDirection = _gameInput.Player.Move.ReadValue<Vector2>();
+            _direction = new Vector3(rawDirection.x, 0f, rawDirection.y);
+            
             if (_state is MovementState.Move or MovementState.Dodge)
                 return;
 
@@ -72,13 +98,13 @@ namespace Movement
             Moving?.Invoke();
         }
 
-        private void OnDodging()
+        private void OnDodging(InputAction.CallbackContext ctx)
         {
             if (_state == MovementState.Dodge)
                 return;
 
-            if (_input.Direction.sqrMagnitude > 0f)
-                StartDodging(_rollingDistance, _input.Direction);
+            if (_direction.sqrMagnitude > 0f)
+                StartDodging(_rollingDistance, Direction);
             else
                 StartDodging(_stepBackDistance, -_model.forward);
 
@@ -91,16 +117,15 @@ namespace Movement
             _dodgeDistance = distance;
             _dodgeDirection = direction;
             
-            Debug.Log("Movement Dodge");
             Dodging?.Invoke();
         }
 
         private void SelfMoving()
         {
-            Vector3 direction = _input.Direction;
-
-            if (direction.sqrMagnitude <= 0f)
+            if (!(_direction.sqrMagnitude > 0f))
                 return;
+            
+            Vector3 direction = Direction;
             
             transform.Translate(direction * (_speed * Time.deltaTime));
             Quaternion targetRotation = Quaternion.LookRotation(direction);

@@ -1,8 +1,7 @@
 {
-    "name": "Movement",
+    "name": "Input",
     "rootNamespace": "",
     "references": [
-        "Input",
         "Unity.InputSystem"
     ],
     "includePlatforms": [],
