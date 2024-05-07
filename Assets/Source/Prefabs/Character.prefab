@@ -225,3 +225,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _weight: 0.5
   _playerMovement: {fileID: 1216140222145853486}
+  _animator: {fileID: 4961234445978387195}

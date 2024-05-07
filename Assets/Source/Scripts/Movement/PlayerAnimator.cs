@@ -5,19 +5,27 @@ namespace Movement
     [RequireComponent(typeof(Animator))]
     public class PlayerAnimator : MonoBehaviour
     {
+        private const float HeavyDodge = 2f;
+        private const float LightDodge = 1f;
+        private const float StepBack = 0f;
+
+        private static readonly int Speed = Animator.StringToHash(nameof(Speed));
+        private static readonly int DodgeType = Animator.StringToHash(nameof(DodgeType));
+        private static readonly int Dodge = Animator.StringToHash(nameof(Dodge));
+
         [SerializeField, Min(0f)] private float _weight = 0.25f;
         [SerializeField] private PlayerMovement _playerMovement;
+        [SerializeField] private Animator _animator;
 
-        private Animator _animator;
-    
-        private static readonly int EquipsWeight = Animator.StringToHash(nameof(EquipsWeight));
-        private static readonly int IsDodging = Animator.StringToHash(nameof(IsDodging));
-        private static readonly int IsMoving = Animator.StringToHash(nameof(IsMoving));
-
-        private void OnValidate()
+        private float DodgeValue
         {
-            if (_animator != null)
-                _animator.SetFloat(EquipsWeight, _weight);
+            get
+            {
+                if (_playerMovement.IsMoving)
+                    return _weight > 0.5f ? HeavyDodge : LightDodge;
+            
+                return StepBack;
+            }
         }
 
         private void OnEnable()
@@ -34,20 +42,18 @@ namespace Movement
             _playerMovement.Dodging -= OnDodging;
         }
 
-        private void Start() => _animator = GetComponent<Animator>();
+        private void OnMoving() => _animator.SetFloat(Speed, 1f);
 
-        private void OnMoving() => _animator.SetBool(IsMoving, true);
-
-        private void OnStaying() => _animator.SetBool(IsMoving, false);
+        private void OnStaying() => _animator.SetFloat(Speed, 0f);
 
         private void OnDodging()
         {
-            Debug.Log("Animator Dodge");
-            _animator.SetBool(IsDodging, true);
+            _animator.SetFloat(DodgeType, DodgeValue);
+            _animator.SetTrigger(Dodge);
         }
 
         #region Animation
-        private void OnDodged() => _animator.SetBool(IsDodging, false);
+        private void OnDodged() => _animator.SetBool(Dodge, false);
         #endregion
     }
 }

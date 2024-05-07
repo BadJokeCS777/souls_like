@@ -21,6 +21,8 @@ namespace Movement
         public event Action Staying;
         public event Action Dodging;
 
+        public bool IsMoving => _input.Direction.sqrMagnitude > 0f;
+
         private void OnEnable()
         {
             _input.Moving += OnMoving;
