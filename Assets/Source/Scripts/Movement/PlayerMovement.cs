@@ -27,6 +27,7 @@ namespace Movement
         public event Action Dodging;
 
         public bool IsMoving => _direction.sqrMagnitude > 0f;
+        private bool IsDodgeProcessing => _dodgeDistanceProgress < _dodgeDistance;
         
         private Vector3 Direction
         {
@@ -78,10 +79,11 @@ namespace Movement
 
         private void OnStaying(InputAction.CallbackContext ctx)
         {
-            if (_state == MovementState.Dodge)
+            _direction = Vector3.zero;
+            
+            if (IsDodgeProcessing)
                 return;
 
-            _direction = Vector3.zero;
             _state = MovementState.Stay;
             Staying?.Invoke();
         }
@@ -91,7 +93,7 @@ namespace Movement
             Vector2 rawDirection = _gameInput.Player.Move.ReadValue<Vector2>();
             _direction = new Vector3(rawDirection.x, 0f, rawDirection.y);
             
-            if (_state is MovementState.Move or MovementState.Dodge)
+            if (_state == MovementState.Move || IsDodgeProcessing)
                 return;
 
             _state = MovementState.Move;
@@ -142,7 +144,18 @@ namespace Movement
             }
             else
             {
-                _state = MovementState.Stay;
+                _state = _direction.sqrMagnitude > 0f ? MovementState.Move : MovementState.Stay;
+
+                if (_direction.sqrMagnitude > 0f)
+                {
+                    _state = MovementState.Move;
+                    OnMoving(new InputAction.CallbackContext());
+                }
+                else
+                {
+                    _state = MovementState.Stay;
+                    OnStaying(new InputAction.CallbackContext());
+                }
             }
         }
     }

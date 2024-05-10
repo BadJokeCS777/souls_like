@@ -98,7 +98,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _speed: 3
-  _rotationSpeedRatio: 0.5
+  _rotationSpeedRatio: 0.08
   _model: {fileID: 7188305045843375806}
   _rollingDistance: 3.5
   _stepBackDistance: 1
