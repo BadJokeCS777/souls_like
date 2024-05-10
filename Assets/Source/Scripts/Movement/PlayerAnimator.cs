@@ -48,26 +48,22 @@ namespace Movement
             _playerMovement.Dodging -= OnDodging;
         }
 
-        private void OnMoving()
-        {
-            if (_speedChanging != null)
-                StopCoroutine(_speedChanging);
+        private void OnMoving() => StartChangeSpeed(MovingSpeed);
 
-            StartCoroutine(SpeedChanging(MovingSpeed));
-        }
-
-        private void OnStaying()
-        {
-            if (_speedChanging != null)
-                StopCoroutine(_speedChanging);
-
-            StartCoroutine(SpeedChanging(0f));
-        }
+        private void OnStaying() => StartChangeSpeed(0f);
 
         private void OnDodging()
         {
             _animator.SetFloat(DodgeType, DodgeValue);
             _animator.SetTrigger(Dodge);
+        }
+
+        private void StartChangeSpeed(float newValue)
+        {
+            if (_speedChanging != null)
+                StopCoroutine(_speedChanging);
+
+            StartCoroutine(SpeedChanging(newValue));
         }
 
         private IEnumerator SpeedChanging(float targetValue)

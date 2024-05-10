@@ -1,11 +1,12 @@
 ﻿using System;
+using System.Linq;
 using Input;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 namespace Movement
 {
-    public class PlayerMovement : MonoBehaviour
+    public class PlayerMovement : MonoBehaviour, IMovement
     {
         [SerializeField] private float _speed = 3f;
         [SerializeField, Range(0.01f, 1f)] private float _rotationSpeedRatio = 0.5f;
@@ -13,23 +14,22 @@ namespace Movement
         [SerializeField] private float _rollingDistance = 3.5f;
         [SerializeField] private float _stepBackDistance = 1f;
 
-        private float _dodgeDistance;
-        private float _dodgeDistanceProgress;
-        private Vector3 _dodgeDirection;
-        private MovementState _state = MovementState.Stay;
+        private Movement _state = Movement.Stay;
 
         private GameInput _gameInput;
         private Transform _camera;
         private Vector3 _direction;
+        private Dodge _dodge;
+        private State _currentState;
+        private State[] _states;
 
         public event Action Moving;
         public event Action Staying;
         public event Action Dodging;
 
         public bool IsMoving => _direction.sqrMagnitude > 0f;
-        private bool IsDodgeProcessing => _dodgeDistanceProgress < _dodgeDistance;
         
-        private Vector3 Direction
+        public Vector3 Direction
         {
             get
             {
@@ -43,6 +43,15 @@ namespace Movement
         {
             _camera = Camera.main.transform;
             _gameInput = new GameInput();
+            _dodge = new Dodge();
+            _states = new State[]
+            {
+                new StayState(),
+                new MoveState(_speed, _rotationSpeedRatio, transform, _model, this),
+                new DodgeState(_speed, transform, _dodge, OnDodgeCompleted)
+            };
+            
+            _currentState = _states[0];
         }
 
         private void OnEnable()
@@ -60,103 +69,57 @@ namespace Movement
             _gameInput.Player.Move.canceled -= OnStaying;
         }
 
-        private void Update()
-        {
-            switch (_state)
-            {
-                case MovementState.Stay:
-                    break;
-                case MovementState.Move:
-                    SelfMoving();
-                    break;
-                case MovementState.Dodge:
-                    SelfDodging();
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
-        }
+        private void Update() => _currentState.Update();
 
         private void OnStaying(InputAction.CallbackContext ctx)
         {
             _direction = Vector3.zero;
             
-            if (IsDodgeProcessing)
+            if (_dodge.IsProcessing)
                 return;
 
-            _state = MovementState.Stay;
+            _state = Movement.Stay;
+            _currentState = _states.First(_ => _ is StayState);
             Staying?.Invoke();
         }
 
         private void OnMoving(InputAction.CallbackContext ctx)
         {
-            Vector2 rawDirection = _gameInput.Player.Move.ReadValue<Vector2>();
+            Vector2 rawDirection = ctx.ReadValue<Vector2>();
             _direction = new Vector3(rawDirection.x, 0f, rawDirection.y);
             
-            if (_state == MovementState.Move || IsDodgeProcessing)
+            if (_state == Movement.Move || _dodge.IsProcessing)
                 return;
 
-            _state = MovementState.Move;
+            _state = Movement.Move;
+            _currentState = _states.First(_ => _ is MoveState);
             Moving?.Invoke();
         }
 
         private void OnDodging(InputAction.CallbackContext ctx)
         {
-            if (_state == MovementState.Dodge)
+            if (_state == Movement.Dodge)
                 return;
 
-            if (_direction.sqrMagnitude > 0f)
-                StartDodging(_rollingDistance, Direction);
+            _state = Movement.Dodge;
+            
+            if (IsMoving)
+                _dodge.Init(_rollingDistance, Direction);
             else
-                StartDodging(_stepBackDistance, -_model.forward);
+                _dodge.Init(_stepBackDistance, -_model.forward);
 
-            _dodgeDistanceProgress = 0f;
-            _state = MovementState.Dodge;
-        }
-    
-        private void StartDodging(float distance, Vector3 direction)
-        {
-            _dodgeDistance = distance;
-            _dodgeDirection = direction;
+            _dodge.Reset();
+            _currentState = _states.First(_ => _ is DodgeState);
             
             Dodging?.Invoke();
         }
-
-        private void SelfMoving()
+        
+        private void OnDodgeCompleted()
         {
-            if (!(_direction.sqrMagnitude > 0f))
-                return;
-            
-            Vector3 direction = Direction;
-            
-            transform.Translate(direction * (_speed * Time.deltaTime));
-            Quaternion targetRotation = Quaternion.LookRotation(direction);
-            _model.rotation = Quaternion.Slerp(_model.rotation, targetRotation, _rotationSpeedRatio);
-        }
-
-        private void SelfDodging()
-        {
-            if (_dodgeDistanceProgress < _dodgeDistance)
-            {
-                Vector3 offset = _dodgeDirection * (_speed * Time.deltaTime);
-                transform.Translate(offset);
-                _dodgeDistanceProgress += offset.magnitude;
-            }
+            if (IsMoving)
+                OnMoving(new InputAction.CallbackContext());
             else
-            {
-                _state = _direction.sqrMagnitude > 0f ? MovementState.Move : MovementState.Stay;
-
-                if (_direction.sqrMagnitude > 0f)
-                {
-                    _state = MovementState.Move;
-                    OnMoving(new InputAction.CallbackContext());
-                }
-                else
-                {
-                    _state = MovementState.Stay;
-                    OnStaying(new InputAction.CallbackContext());
-                }
-            }
+                OnStaying(new InputAction.CallbackContext());
         }
     }
 }

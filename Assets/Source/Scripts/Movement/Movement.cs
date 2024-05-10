@@ -1,6 +1,6 @@
 ﻿namespace Movement
 {
-    public enum MovementState
+    public enum Movement
     {
         Stay,
         Move,
