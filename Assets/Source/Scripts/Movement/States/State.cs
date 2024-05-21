@@ -1,4 +1,4 @@
-﻿namespace Movement
+﻿namespace Movement.States
 {
     internal abstract class State
     {

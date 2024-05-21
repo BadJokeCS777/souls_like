@@ -1,4 +1,4 @@
-﻿namespace Movement
+﻿namespace Movement.States
 {
     internal class StayState : State
     {

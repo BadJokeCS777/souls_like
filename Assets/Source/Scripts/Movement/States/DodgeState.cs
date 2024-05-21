@@ -1,7 +1,7 @@
 ﻿using System;
 using UnityEngine;
 
-namespace Movement
+namespace Movement.States
 {
     internal class DodgeState : State
     {

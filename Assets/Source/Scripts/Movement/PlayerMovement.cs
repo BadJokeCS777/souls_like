@@ -1,6 +1,7 @@
 ﻿using System;
-using System.Linq;
 using Input;
+using JetBrains.Annotations;
+using Movement.States;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -14,26 +15,27 @@ namespace Movement
         [SerializeField] private float _rollingDistance = 3.5f;
         [SerializeField] private float _stepBackDistance = 1f;
 
-        private Movement _state = Movement.Stay;
-
         private GameInput _gameInput;
         private Transform _camera;
-        private Vector3 _direction;
+        private Vector3 _rawDirection;
         private Dodge _dodge;
+        
         private State _currentState;
-        private State[] _states;
+        private StayState _stayState;
+        private MoveState _moveState;
+        private DodgeState _dodgeState;
 
         public event Action Moving;
         public event Action Staying;
         public event Action Dodging;
 
-        public bool IsMoving => _direction.sqrMagnitude > 0f;
+        public bool IsMoving => _rawDirection.sqrMagnitude > 0f;
         
         public Vector3 Direction
         {
             get
             {
-                Vector3 direction = _camera.forward * _direction.z + _camera.right * _direction.x;
+                Vector3 direction = _camera.forward * _rawDirection.z + _camera.right * _rawDirection.x;
                 direction.y = 0f;
                 return direction.normalized;
             }
@@ -44,14 +46,12 @@ namespace Movement
             _camera = Camera.main.transform;
             _gameInput = new GameInput();
             _dodge = new Dodge();
-            _states = new State[]
-            {
-                new StayState(),
-                new MoveState(_speed, _rotationSpeedRatio, transform, _model, this),
-                new DodgeState(_speed, transform, _dodge, OnDodgeCompleted)
-            };
+
+            _stayState = new StayState();
+            _moveState = new MoveState(_speed, _rotationSpeedRatio, transform, _model, this);
+            _dodgeState = new DodgeState(_speed, transform, _dodge, OnDodgeCompleted);
             
-            _currentState = _states[0];
+            _currentState = _stayState;
         }
 
         private void OnEnable()
@@ -71,37 +71,33 @@ namespace Movement
 
         private void Update() => _currentState.Update();
 
-        private void OnStaying(InputAction.CallbackContext ctx)
+        private void OnStaying([CanBeNull]InputAction.CallbackContext ctx)
         {
-            _direction = Vector3.zero;
+            _rawDirection = Vector3.zero;
             
             if (_dodge.IsProcessing)
                 return;
 
-            _state = Movement.Stay;
-            _currentState = _states.First(_ => _ is StayState);
+            _currentState = _stayState;
             Staying?.Invoke();
         }
 
         private void OnMoving(InputAction.CallbackContext ctx)
         {
-            Vector2 rawDirection = ctx.ReadValue<Vector2>();
-            _direction = new Vector3(rawDirection.x, 0f, rawDirection.y);
+            Vector2 input = ctx.ReadValue<Vector2>();
+            Debug.Log($"Input: {input}");
+            _rawDirection = new Vector3(input.x, 0f, input.y);
             
-            if (_state == Movement.Move || _dodge.IsProcessing)
+            if (_currentState == _moveState || _dodge.IsProcessing)
                 return;
 
-            _state = Movement.Move;
-            _currentState = _states.First(_ => _ is MoveState);
-            Moving?.Invoke();
+            SwitchToMoveState();
         }
 
         private void OnDodging(InputAction.CallbackContext ctx)
         {
-            if (_state == Movement.Dodge)
+            if (_currentState == _dodgeState)
                 return;
-
-            _state = Movement.Dodge;
             
             if (IsMoving)
                 _dodge.Init(_rollingDistance, Direction);
@@ -109,17 +105,24 @@ namespace Movement
                 _dodge.Init(_stepBackDistance, -_model.forward);
 
             _dodge.Reset();
-            _currentState = _states.First(_ => _ is DodgeState);
+            _currentState = _dodgeState;
             
             Dodging?.Invoke();
         }
         
         private void OnDodgeCompleted()
         {
+            Debug.Log($"Dodge completed. Character moving: {IsMoving}");
             if (IsMoving)
-                OnMoving(new InputAction.CallbackContext());
+                SwitchToMoveState();
             else
                 OnStaying(new InputAction.CallbackContext());
+        }
+
+        private void SwitchToMoveState()
+        {
+            _currentState = _moveState;
+            Moving?.Invoke();
         }
     }
 }
