@@ -1,6 +1,5 @@
 ﻿using System;
 using Input;
-using JetBrains.Annotations;
 using Movement.States;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -28,9 +27,9 @@ namespace Movement
         public event Action Moving;
         public event Action Staying;
         public event Action Dodging;
+        public event Action Dodged;
 
         public bool IsMoving => _rawDirection.sqrMagnitude > 0f;
-        
         public Vector3 Direction
         {
             get
@@ -40,10 +39,9 @@ namespace Movement
                 return direction.normalized;
             }
         }
-        
+
         private void Awake()
         {
-            _camera = Camera.main.transform;
             _gameInput = new GameInput();
             _dodge = new Dodge();
 
@@ -70,8 +68,13 @@ namespace Movement
         }
 
         private void Update() => _currentState.Update();
-
-        private void OnStaying([CanBeNull]InputAction.CallbackContext ctx)
+        
+        public void Init(Transform cameraTransform)
+        {
+            _camera = cameraTransform;
+        }
+        
+        private void OnStaying(InputAction.CallbackContext ctx)
         {
             _rawDirection = Vector3.zero;
             
@@ -85,7 +88,6 @@ namespace Movement
         private void OnMoving(InputAction.CallbackContext ctx)
         {
             Vector2 input = ctx.ReadValue<Vector2>();
-            Debug.Log($"Input: {input}");
             _rawDirection = new Vector3(input.x, 0f, input.y);
             
             if (_currentState == _moveState || _dodge.IsProcessing)
@@ -112,7 +114,8 @@ namespace Movement
         
         private void OnDodgeCompleted()
         {
-            Debug.Log($"Dodge completed. Character moving: {IsMoving}");
+            Dodged?.Invoke();
+            
             if (IsMoving)
                 SwitchToMoveState();
             else

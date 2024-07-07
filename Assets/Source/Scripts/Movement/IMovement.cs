@@ -6,5 +6,7 @@ namespace Movement
     {
         public bool IsMoving { get; }
         public Vector3 Direction { get; }
+
+        public void Init(Transform cameraTransform);
     }
 }

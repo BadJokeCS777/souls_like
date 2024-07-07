@@ -6,8 +6,8 @@ namespace Movement
     [RequireComponent(typeof(Animator))]
     public class PlayerAnimator : MonoBehaviour
     {
-        private const float HeavyDodge = 2f;
-        private const float LightDodge = 1f;
+        private const float HeavyRoll = 2f;
+        private const float LightRoll = 1f;
         private const float StepBack = 0f;
         private const float MovingSpeed = 1f;
 
@@ -28,7 +28,7 @@ namespace Movement
             get
             {
                 if (_playerMovement.IsMoving)
-                    return _weight > 0.5f ? HeavyDodge : LightDodge;
+                    return _weight > 0.5f ? HeavyRoll : LightRoll;
             
                 return StepBack;
             }
@@ -39,6 +39,7 @@ namespace Movement
             _playerMovement.Moving += OnMoving;
             _playerMovement.Staying += OnStaying;
             _playerMovement.Dodging += OnDodging;
+            _playerMovement.Dodged += OnDodged;
         }
 
         private void OnDisable()
@@ -46,6 +47,7 @@ namespace Movement
             _playerMovement.Moving -= OnMoving;
             _playerMovement.Staying -= OnStaying;
             _playerMovement.Dodging -= OnDodging;
+            _playerMovement.Dodged -= OnDodged;
         }
 
         private void OnMoving() => StartChangeSpeed(MovingSpeed);
@@ -81,8 +83,6 @@ namespace Movement
             }
         }
 
-        #region Animation
         private void OnDodged() => _animator.SetBool(Dodge, false);
-        #endregion
     }
 }

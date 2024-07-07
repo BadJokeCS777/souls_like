@@ -1,0 +1,17 @@
+{
+    "name": "General",
+    "rootNamespace": "",
+    "references": [
+        "Cinemachine",
+        "Movement"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
