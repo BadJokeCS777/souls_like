@@ -1,15 +1,14 @@
-﻿using Movement;
+﻿using SL.Movement;
 using UnityEngine;
 
-namespace General
+namespace SL.General
 {
+    [RequireComponent(typeof(PlayerMovement))]
     public class Player : MonoBehaviour
     {
-        [SerializeField] private PlayerMovement _movement;
-
         public void Init(Transform cameraTransform)
         {
-            _movement.Init(cameraTransform);
+            GetComponent<IMovement>().Init(cameraTransform);
         }
     }
 }

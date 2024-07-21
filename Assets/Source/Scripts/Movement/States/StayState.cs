@@ -1,9 +1,9 @@
-﻿namespace Movement.States
+﻿namespace SL.Movement.States
 {
-    internal class StayState : State
+    internal class StayState : State.State
     {
-        public override void Update()
-        {
-        }
+        public override void Begin() { }
+
+        public override void Update() { }
     }
 }

@@ -1,7 +1,7 @@
 ﻿using System;
 using UnityEngine;
 
-namespace General
+namespace SL.General
 {
     [Serializable]
     public class PlayerSpawner

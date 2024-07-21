@@ -1,33 +1,39 @@
 ﻿using System;
-using Input;
-using Movement.States;
+using SL.Input;
+using SL.Movement.States;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-namespace Movement
+namespace SL.Movement
 {
     public class PlayerMovement : MonoBehaviour, IMovement
     {
+        [SerializeField] private Rigidbody _rigidbody;
+        [SerializeField] private Transform _model;
+        [SerializeField] private Transform _groundCheckPoint;
         [SerializeField] private float _speed = 3f;
         [SerializeField, Range(0.01f, 1f)] private float _rotationSpeedRatio = 0.5f;
-        [SerializeField] private Transform _model;
         [SerializeField] private float _rollingDistance = 3.5f;
         [SerializeField] private float _stepBackDistance = 1f;
+        [SerializeField] private float _jumpHeight = 1f;
 
         private GameInput _gameInput;
         private Transform _camera;
         private Vector3 _rawDirection;
         private Dodge _dodge;
         
-        private State _currentState;
+        private State.State _currentState;
         private StayState _stayState;
         private MoveState _moveState;
         private DodgeState _dodgeState;
+        private JumpState _jumpState;
 
         public event Action Moving;
         public event Action Staying;
         public event Action Dodging;
         public event Action Dodged;
+        public event Action Jumping;
+        public event Action Jumped;
 
         public bool IsMoving => _rawDirection.sqrMagnitude > 0f;
         public Vector3 Direction
@@ -40,6 +46,8 @@ namespace Movement
             }
         }
 
+        private bool CantDodge => _jumpState.OnGround == false || _currentState == _dodgeState || _currentState == _jumpState;
+
         private void Awake()
         {
             _gameInput = new GameInput();
@@ -48,8 +56,10 @@ namespace Movement
             _stayState = new StayState();
             _moveState = new MoveState(_speed, _rotationSpeedRatio, transform, _model, this);
             _dodgeState = new DodgeState(_speed, transform, _dodge, OnDodgeCompleted);
+            _jumpState = new JumpState(_jumpHeight, _rigidbody, _groundCheckPoint, OnJumpCompleted);
             
-            _currentState = _stayState;
+            
+            SetState(_stayState);
         }
 
         private void OnEnable()
@@ -58,6 +68,7 @@ namespace Movement
             _gameInput.Player.Dodge.performed += OnDodging;
             _gameInput.Player.Move.performed += OnMoving;
             _gameInput.Player.Move.canceled += OnStaying;
+            _gameInput.Player.Jump.canceled += OnJumping;
         }
 
         private void OnDisable()
@@ -65,6 +76,7 @@ namespace Movement
             _gameInput.Player.Dodge.performed -= OnDodging;
             _gameInput.Player.Move.performed -= OnMoving;
             _gameInput.Player.Move.canceled -= OnStaying;
+            _gameInput.Player.Jump.canceled -= OnJumping;
         }
 
         private void Update() => _currentState.Update();
@@ -78,10 +90,10 @@ namespace Movement
         {
             _rawDirection = Vector3.zero;
             
-            if (_dodge.IsProcessing)
+            if (_currentState == _jumpState || _dodge.IsProcessing)
                 return;
 
-            _currentState = _stayState;
+            SetState(_stayState);
             Staying?.Invoke();
         }
 
@@ -90,7 +102,7 @@ namespace Movement
             Vector2 input = ctx.ReadValue<Vector2>();
             _rawDirection = new Vector3(input.x, 0f, input.y);
             
-            if (_currentState == _moveState || _dodge.IsProcessing)
+            if (_currentState == _jumpState || _currentState == _moveState || _dodge.IsProcessing)
                 return;
 
             SwitchToMoveState();
@@ -98,7 +110,7 @@ namespace Movement
 
         private void OnDodging(InputAction.CallbackContext ctx)
         {
-            if (_currentState == _dodgeState)
+            if (CantDodge)
                 return;
             
             if (IsMoving)
@@ -111,11 +123,33 @@ namespace Movement
             
             Dodging?.Invoke();
         }
+
+        private void OnJumping(InputAction.CallbackContext ctx)
+        {
+            if (_jumpState.OnGround == false)
+                return;
+
+            if (_currentState == _jumpState)
+                return;
+            
+            SetState(_jumpState);
+            Jumping?.Invoke();
+        }
         
         private void OnDodgeCompleted()
         {
             Dodged?.Invoke();
-            
+            OnActionEnd();
+        }
+        
+        private void OnJumpCompleted()
+        {
+            Jumped?.Invoke();
+            OnActionEnd();
+        }
+
+        private void OnActionEnd()
+        {
             if (IsMoving)
                 SwitchToMoveState();
             else
@@ -124,8 +158,22 @@ namespace Movement
 
         private void SwitchToMoveState()
         {
-            _currentState = _moveState;
+            SetState(_moveState);
             Moving?.Invoke();
         }
+
+        private void SetState(State.State state)
+        {
+            _currentState = state;
+            _currentState.Begin();
+        }
+        
+        #if UNITY_EDITOR
+        [ContextMenu(nameof(Jump))]
+        private void Jump()
+        {
+            _jumpState.Jump();
+        }
+        #endif
     }
 }

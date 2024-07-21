@@ -1,6 +1,6 @@
 {
-    "name": "Input",
-    "rootNamespace": "",
+    "name": "SL.Input",
+    "rootNamespace": "SL",
     "references": [
         "Unity.InputSystem"
     ],

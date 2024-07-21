@@ -1,7 +1,7 @@
 using Cinemachine;
 using UnityEngine;
 
-namespace General
+namespace SL.General
 {
     public class SceneRoot : MonoBehaviour
     {

@@ -1,9 +1,9 @@
 ﻿using System;
 using UnityEngine;
 
-namespace Movement.States
+namespace SL.Movement.States
 {
-    internal class DodgeState : State
+    internal class DodgeState : State.State
     {
         private readonly float _speed;
         private readonly Transform _transform;
@@ -17,6 +17,8 @@ namespace Movement.States
             _dodge = dodge;
             _callback = callback;
         }
+
+        public override void Begin() { }
 
         public override void Update()
         {

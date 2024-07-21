@@ -15,7 +15,7 @@ using System.Collections.Generic;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.Utilities;
 
-namespace Input
+namespace SL.Input
 {
     public partial class @GameInput: IInputActionCollection2, IDisposable
     {
@@ -55,6 +55,15 @@ namespace Input
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""Jump"",
+                    ""type"": ""Button"",
+                    ""id"": ""6bcecb59-cdaa-4c75-be42-7e68a389d86c"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -134,6 +143,17 @@ namespace Input
                     ""action"": ""Move"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""d7b829f1-e0b3-43dc-9f21-3479261e56a5"",
+                    ""path"": ""<Keyboard>/space"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Jump"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -162,6 +182,7 @@ namespace Input
             m_Player_Dodge = m_Player.FindAction("Dodge", throwIfNotFound: true);
             m_Player_Run = m_Player.FindAction("Run", throwIfNotFound: true);
             m_Player_Move = m_Player.FindAction("Move", throwIfNotFound: true);
+            m_Player_Jump = m_Player.FindAction("Jump", throwIfNotFound: true);
         }
 
         public void Dispose()
@@ -226,6 +247,7 @@ namespace Input
         private readonly InputAction m_Player_Dodge;
         private readonly InputAction m_Player_Run;
         private readonly InputAction m_Player_Move;
+        private readonly InputAction m_Player_Jump;
         public struct PlayerActions
         {
             private @GameInput m_Wrapper;
@@ -233,6 +255,7 @@ namespace Input
             public InputAction @Dodge => m_Wrapper.m_Player_Dodge;
             public InputAction @Run => m_Wrapper.m_Player_Run;
             public InputAction @Move => m_Wrapper.m_Player_Move;
+            public InputAction @Jump => m_Wrapper.m_Player_Jump;
             public InputActionMap Get() { return m_Wrapper.m_Player; }
             public void Enable() { Get().Enable(); }
             public void Disable() { Get().Disable(); }
@@ -251,6 +274,9 @@ namespace Input
                 @Move.started += instance.OnMove;
                 @Move.performed += instance.OnMove;
                 @Move.canceled += instance.OnMove;
+                @Jump.started += instance.OnJump;
+                @Jump.performed += instance.OnJump;
+                @Jump.canceled += instance.OnJump;
             }
 
             private void UnregisterCallbacks(IPlayerActions instance)
@@ -264,6 +290,9 @@ namespace Input
                 @Move.started -= instance.OnMove;
                 @Move.performed -= instance.OnMove;
                 @Move.canceled -= instance.OnMove;
+                @Jump.started -= instance.OnJump;
+                @Jump.performed -= instance.OnJump;
+                @Jump.canceled -= instance.OnJump;
             }
 
             public void RemoveCallbacks(IPlayerActions instance)
@@ -295,6 +324,7 @@ namespace Input
             void OnDodge(InputAction.CallbackContext context);
             void OnRun(InputAction.CallbackContext context);
             void OnMove(InputAction.CallbackContext context);
+            void OnJump(InputAction.CallbackContext context);
         }
     }
 }

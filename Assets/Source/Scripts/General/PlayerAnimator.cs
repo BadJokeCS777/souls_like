@@ -1,7 +1,8 @@
 ﻿using System.Collections;
+using SL.Movement;
 using UnityEngine;
 
-namespace Movement
+namespace SL.General
 {
     [RequireComponent(typeof(Animator))]
     public class PlayerAnimator : MonoBehaviour

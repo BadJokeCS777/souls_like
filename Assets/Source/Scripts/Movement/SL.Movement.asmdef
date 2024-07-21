@@ -1,9 +1,10 @@
 {
-    "name": "General",
-    "rootNamespace": "",
+    "name": "SL.Movement",
+    "rootNamespace": "SL",
     "references": [
-        "Cinemachine",
-        "Movement"
+        "Unity.InputSystem",
+        "SL.Input",
+        "SL.State"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

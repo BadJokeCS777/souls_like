@@ -1,8 +1,8 @@
 ﻿using UnityEngine;
 
-namespace Movement.States
+namespace SL.Movement.States
 {
-    internal class MoveState : State
+    internal class MoveState : State.State
     {
         private readonly float _speed;
         private readonly float _rotationSpeedRatio;
@@ -18,6 +18,8 @@ namespace Movement.States
             _model = model;
             _movement = movement;
         }
+
+        public override void Begin() { }
 
         public override void Update()
         {
