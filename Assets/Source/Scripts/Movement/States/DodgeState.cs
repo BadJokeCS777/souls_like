@@ -1,9 +1,10 @@
 ﻿using System;
+using SL.States;
 using UnityEngine;
 
 namespace SL.Movement.States
 {
-    internal class DodgeState : State.State
+    internal class DodgeState : State
     {
         private readonly float _speed;
         private readonly Transform _transform;

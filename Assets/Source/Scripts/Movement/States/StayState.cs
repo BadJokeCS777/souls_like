@@ -1,6 +1,8 @@
-﻿namespace SL.Movement.States
+﻿using SL.States;
+
+namespace SL.Movement.States
 {
-    internal class StayState : State.State
+    internal class StayState : State
     {
         public override void Begin() { }
 

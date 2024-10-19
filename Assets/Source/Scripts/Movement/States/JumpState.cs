@@ -1,12 +1,13 @@
 ﻿using System;
+using SL.States;
 using UnityEngine;
 
 namespace SL.Movement.States
 {
-    internal class JumpState : State.State
+    internal class JumpState : State
     {
         private const float GroundCheckDistance = 0.1f;
-        
+
         private readonly float _height;
         private readonly Rigidbody _rigidbody;
         private readonly Transform _checkPoint;
@@ -29,7 +30,7 @@ namespace SL.Movement.States
         {
             if (OnGround == false)
                 throw new AggregateException("Character must be on ground");
-            
+
             Jump();
         }
 

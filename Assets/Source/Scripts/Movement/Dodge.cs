@@ -6,7 +6,7 @@ namespace SL.Movement
     {
         private float _dodgeDistance;
         private float _dodgeDistanceProgress;
-        
+
         public Vector3 Direction { get; private set; }
         public bool IsProcessing => _dodgeDistanceProgress < _dodgeDistance;
 

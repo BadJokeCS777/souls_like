@@ -1,10 +1,10 @@
 {
     "name": "SL.Movement",
-    "rootNamespace": "SL",
+    "rootNamespace": "SL.Movement",
     "references": [
         "Unity.InputSystem",
         "SL.Input",
-        "SL.State"
+        "SL.States"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

@@ -1,6 +1,7 @@
 ﻿using System;
 using SL.Input;
 using SL.Movement.States;
+using SL.States;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -21,8 +22,8 @@ namespace SL.Movement
         private Transform _camera;
         private Vector3 _rawDirection;
         private Dodge _dodge;
-        
-        private State.State _currentState;
+
+        private State _currentState;
         private StayState _stayState;
         private MoveState _moveState;
         private DodgeState _dodgeState;
@@ -57,8 +58,8 @@ namespace SL.Movement
             _moveState = new MoveState(_speed, _rotationSpeedRatio, transform, _model, this);
             _dodgeState = new DodgeState(_speed, transform, _dodge, OnDodgeCompleted);
             _jumpState = new JumpState(_jumpHeight, _rigidbody, _groundCheckPoint, OnJumpCompleted);
-            
-            
+
+
             SetState(_stayState);
         }
 
@@ -80,16 +81,16 @@ namespace SL.Movement
         }
 
         private void Update() => _currentState.Update();
-        
+
         public void Init(Transform cameraTransform)
         {
             _camera = cameraTransform;
         }
-        
+
         private void OnStaying(InputAction.CallbackContext ctx)
         {
             _rawDirection = Vector3.zero;
-            
+
             if (_currentState == _jumpState || _dodge.IsProcessing)
                 return;
 
@@ -101,7 +102,7 @@ namespace SL.Movement
         {
             Vector2 input = ctx.ReadValue<Vector2>();
             _rawDirection = new Vector3(input.x, 0f, input.y);
-            
+
             if (_currentState == _jumpState || _currentState == _moveState || _dodge.IsProcessing)
                 return;
 
@@ -112,7 +113,7 @@ namespace SL.Movement
         {
             if (CantDodge)
                 return;
-            
+
             if (IsMoving)
                 _dodge.Init(_rollingDistance, Direction);
             else
@@ -120,7 +121,7 @@ namespace SL.Movement
 
             _dodge.Reset();
             _currentState = _dodgeState;
-            
+
             Dodging?.Invoke();
         }
 
@@ -131,17 +132,17 @@ namespace SL.Movement
 
             if (_currentState == _jumpState)
                 return;
-            
+
             SetState(_jumpState);
             Jumping?.Invoke();
         }
-        
+
         private void OnDodgeCompleted()
         {
             Dodged?.Invoke();
             OnActionEnd();
         }
-        
+
         private void OnJumpCompleted()
         {
             Jumped?.Invoke();
@@ -162,12 +163,12 @@ namespace SL.Movement
             Moving?.Invoke();
         }
 
-        private void SetState(State.State state)
+        private void SetState(State state)
         {
             _currentState = state;
             _currentState.Begin();
         }
-        
+
         #if UNITY_EDITOR
         [ContextMenu(nameof(Jump))]
         private void Jump()

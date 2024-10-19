@@ -1,6 +1,6 @@
 {
     "name": "SL.General",
-    "rootNamespace": "SL",
+    "rootNamespace": "SL.General",
     "references": [
         "Cinemachine",
         "SL.Movement"
