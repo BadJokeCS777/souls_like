@@ -7,7 +7,7 @@ namespace SL.General
     {
         [SerializeField] private CinemachineVirtualCameraBase _mainCamera;
         [SerializeField] private PlayerSpawner _playerSpawner;
-        
+
         private void Start()
         {
             Transform cameraTransform = Camera.main.transform;

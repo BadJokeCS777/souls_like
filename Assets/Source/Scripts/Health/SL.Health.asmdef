@@ -1,12 +1,12 @@
-{
-    "name": "SL.General",
-    "rootNamespace": "SL.General",
+﻿{
+    "name": "SL.Health",
+    "rootNamespace": "SL.Health",
     "references": [
-        "Cinemachine",
         "Loxodon.Framework",
-        "SL.Health",
-        "SL.Movement",
-        "Zenject"
+        "Loxodon.Framework.Binding.Weaving",
+        "Loxodon.Framework.Fody",
+        "Zenject",
+        "SL.Signals"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
