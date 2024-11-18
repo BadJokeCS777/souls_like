@@ -1,6 +1,6 @@
 ﻿{
     "name": "SL.Signals",
-    "rootNamespace": "SL.Signals",
+    "rootNamespace": "SL",
     "references": [],
     "includePlatforms": [],
     "excludePlatforms": [],

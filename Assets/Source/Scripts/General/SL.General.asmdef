@@ -1,6 +1,6 @@
 {
     "name": "SL.General",
-    "rootNamespace": "SL.General",
+    "rootNamespace": "SL",
     "references": [
         "Cinemachine",
         "Loxodon.Framework",

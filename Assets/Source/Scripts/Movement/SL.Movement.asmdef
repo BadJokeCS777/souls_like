@@ -1,6 +1,6 @@
 {
     "name": "SL.Movement",
-    "rootNamespace": "SL.Movement",
+    "rootNamespace": "SL",
     "references": [
         "Unity.InputSystem",
         "SL.Input",

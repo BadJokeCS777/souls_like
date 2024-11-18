@@ -3,7 +3,6 @@ using BindingProxy;
 using Loxodon.Framework.Messaging;
 using PropertyChanged;
 using SL.Signals;
-using UnityEngine;
 
 namespace SL.Health.Models
 {

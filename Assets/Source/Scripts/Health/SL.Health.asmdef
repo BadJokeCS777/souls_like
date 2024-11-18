@@ -1,6 +1,6 @@
 ﻿{
     "name": "SL.Health",
-    "rootNamespace": "SL.Health",
+    "rootNamespace": "SL",
     "references": [
         "Loxodon.Framework",
         "Loxodon.Framework.Binding.Weaving",

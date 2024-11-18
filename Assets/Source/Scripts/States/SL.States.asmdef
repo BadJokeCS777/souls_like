@@ -1,6 +1,6 @@
 ﻿{
     "name": "SL.States",
-    "rootNamespace": "SL.States",
+    "rootNamespace": "SL",
     "references": [],
     "includePlatforms": [],
     "excludePlatforms": [],
