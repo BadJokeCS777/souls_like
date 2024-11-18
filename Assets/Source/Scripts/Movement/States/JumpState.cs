@@ -6,7 +6,7 @@ namespace SL.Movement.States
 {
     internal class JumpState : State
     {
-        private const float GroundCheckDistance = 0.1f;
+        private const float GroundCheckDistance = 0.05f;
 
         private readonly float _height;
         private readonly Rigidbody _rigidbody;

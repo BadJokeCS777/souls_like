@@ -15,6 +15,7 @@ namespace SL.General
         private static readonly int Speed = Animator.StringToHash(nameof(Speed));
         private static readonly int DodgeType = Animator.StringToHash(nameof(DodgeType));
         private static readonly int Dodge = Animator.StringToHash(nameof(Dodge));
+        private static readonly int Jump = Animator.StringToHash(nameof(Jump));
 
         [SerializeField, Min(0f)] private float _weight = 0.25f;
         [SerializeField, Min(0f)] private float _movingChangeDuration = 0.1f;
@@ -30,7 +31,7 @@ namespace SL.General
             {
                 if (_playerMovement.IsMoving)
                     return _weight > 0.5f ? HeavyRoll : LightRoll;
-            
+
                 return StepBack;
             }
         }
@@ -41,6 +42,8 @@ namespace SL.General
             _playerMovement.Staying += OnStaying;
             _playerMovement.Dodging += OnDodging;
             _playerMovement.Dodged += OnDodged;
+            _playerMovement.Jumping += OnJumping;
+            _playerMovement.Jumped += OnJumped;
         }
 
         private void OnDisable()
@@ -49,17 +52,13 @@ namespace SL.General
             _playerMovement.Staying -= OnStaying;
             _playerMovement.Dodging -= OnDodging;
             _playerMovement.Dodged -= OnDodged;
+            _playerMovement.Jumping -= OnJumping;
+            _playerMovement.Jumped -= OnJumped;
         }
 
         private void OnMoving() => StartChangeSpeed(MovingSpeed);
 
         private void OnStaying() => StartChangeSpeed(0f);
-
-        private void OnDodging()
-        {
-            _animator.SetFloat(DodgeType, DodgeValue);
-            _animator.SetTrigger(Dodge);
-        }
 
         private void StartChangeSpeed(float newValue)
         {
@@ -73,7 +72,7 @@ namespace SL.General
         {
             float maxDelta = 0f;
             float startValue = _speed;
-            
+
             while (Mathf.Approximately(_speed, targetValue) == false)
             {
                 yield return null;
@@ -84,6 +83,15 @@ namespace SL.General
             }
         }
 
+        private void OnDodging()
+        {
+            _animator.SetFloat(DodgeType, DodgeValue);
+            _animator.SetTrigger(Dodge);
+        }
+
         private void OnDodged() => _animator.SetBool(Dodge, false);
+
+        private void OnJumping() => _animator.SetTrigger(Jump);
+        private void OnJumped() => _animator.ResetTrigger(Jump);
     }
 }

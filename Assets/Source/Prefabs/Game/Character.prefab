@@ -107,7 +107,7 @@ MonoBehaviour:
   _rotationSpeedRatio: 0.08
   _rollingDistance: 3.5
   _stepBackDistance: 1
-  _jumpHeight: 2
+  _jumpHeight: 0.6
 --- !u!114 &6167463515092548967
 MonoBehaviour:
   m_ObjectHideFlags: 0

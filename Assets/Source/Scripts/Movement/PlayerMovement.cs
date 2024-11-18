@@ -59,7 +59,6 @@ namespace SL.Movement
             _dodgeState = new DodgeState(_speed, transform, _dodge, OnDodgeCompleted);
             _jumpState = new JumpState(_jumpHeight, _rigidbody, _groundCheckPoint, OnJumpCompleted);
 
-
             SetState(_stayState);
         }
 
@@ -145,7 +144,7 @@ namespace SL.Movement
 
         private void OnJumpCompleted()
         {
-            Jumped?.Invoke();
+            // Jumped?.Invoke();
             OnActionEnd();
         }
 
