@@ -122,7 +122,7 @@ namespace SL.Movement
 
         private void OnMoving(InputAction.CallbackContext ctx)
         {
-            Vector2 input = ctx.ReadValue<Vector2>();
+            var input = ctx.ReadValue<Vector2>();
             _rawDirection = new Vector3(input.x, 0f, input.y);
 
             if (_currentState == _jumpState || _currentState == _moveState || _dodge.IsProcessing)
@@ -167,6 +167,7 @@ namespace SL.Movement
 
         private void OnJumpCompleted()
         {
+            //TODO: finish jump
             // Jumped?.Invoke();
             OnActionEnd();
         }
@@ -190,13 +191,5 @@ namespace SL.Movement
             _currentState = state;
             _currentState.Begin();
         }
-
-        #if UNITY_EDITOR
-        [ContextMenu(nameof(Jump))]
-        private void Jump()
-        {
-            _jumpState.Jump();
-        }
-        #endif
     }
 }

@@ -2,5 +2,5 @@
 
 namespace SL.Interactions
 {
-    internal class Interactor : MonoBehaviour{}
+    public class Interactor : MonoBehaviour{}
 }
