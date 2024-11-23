@@ -1,0 +1,21 @@
+{
+    "name": "SL.Interactions",
+    "rootNamespace": "SL",
+    "references": [
+        "GUID:e353924064f468f48b732b2ec0d3e62a",
+        "GUID:d96192adfa3795848ae916a867120e8f",
+        "GUID:80c4836a72fca9f4f96894aede385afc",
+        "GUID:6055be8ebefd69e48b49212b09b47b2f",
+        "GUID:0d8beb7f090555447a6cf5ce9e54dbb4",
+        "GUID:547dda472df94484b2e8c4f4f172412c"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

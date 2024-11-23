@@ -3,6 +3,7 @@
 	<AssemblyNames>
 		<Item>Assembly-CSharp</Item>
 		<Item>SL.Health</Item>
+		<Item>SL.Interactions</Item>
 	</AssemblyNames>
 	<PropertyChanged defaultWeaving ="true" />
 </Weavers>

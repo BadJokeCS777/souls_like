@@ -18,13 +18,19 @@ namespace SL.Health.Views
         private void Construct(HealthModel model)
         {
             _viewModel = new HealthViewModel(model);
-            _viewModel.Initialize();
         }
 
         protected override void Start()
         {
             base.Start();
             Bind();
+            _viewModel.Initialize();
+        }
+
+        protected override void OnDestroy()
+        {
+            base.OnDestroy();
+            _viewModel.Dispose();
         }
 
         private void Bind()

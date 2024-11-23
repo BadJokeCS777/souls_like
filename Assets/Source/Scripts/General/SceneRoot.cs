@@ -1,4 +1,5 @@
 using Cinemachine;
+using SL.General.Player;
 using UnityEngine;
 
 namespace SL.General
@@ -11,7 +12,7 @@ namespace SL.General
         private void Start()
         {
             Transform cameraTransform = Camera.main.transform;
-            Player player = _playerSpawner.Spawn(cameraTransform);
+            Player.Player player = _playerSpawner.Spawn(cameraTransform);
 
             InitCameras(player.transform, player.transform);
         }

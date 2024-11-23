@@ -4,9 +4,10 @@
     "references": [
         "Cinemachine",
         "Loxodon.Framework",
+        "Zenject",
         "SL.Health",
-        "SL.Movement",
-        "Zenject"
+        "SL.Interactions",
+        "SL.Movement"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

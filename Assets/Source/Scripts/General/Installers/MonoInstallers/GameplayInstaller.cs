@@ -2,18 +2,20 @@
 using Loxodon.Framework.Contexts;
 using Loxodon.Framework.Messaging;
 using SL.Health.Models;
+using SL.Interactions;
 using Zenject;
 using Context = Loxodon.Framework.Contexts.Context;
 
 namespace SL.General.Installers.MonoInstallers
 {
-    public class HealthInstaller : MonoInstaller
+    public class GameplayInstaller : MonoInstaller
     {
         public override void InstallBindings()
         {
             BundleSetInitialization();
-            Container.Bind<IMessenger>().To<Messenger>().AsSingle();
+            Container.Bind<IMessenger>().To<Messenger>().AsSingle().NonLazy();
             Container.Bind<HealthModel>().AsSingle();
+            Container.Bind<InteractionsModel>().AsSingle();
         }
 
         private static void BundleSetInitialization()

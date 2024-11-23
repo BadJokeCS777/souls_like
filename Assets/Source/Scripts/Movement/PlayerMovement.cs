@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using SL.Input;
 using SL.Movement.States;
 using SL.States;
@@ -18,6 +19,7 @@ namespace SL.Movement
         [SerializeField] private float _stepBackDistance = 1f;
         [SerializeField] private float _jumpHeight = 1f;
 
+        private Animator _animator;
         private GameInput _gameInput;
         private Transform _camera;
         private Vector3 _rawDirection;
@@ -35,6 +37,8 @@ namespace SL.Movement
         public event Action Dodged;
         public event Action Jumping;
         public event Action Jumped;
+        public event Action Sitting;
+        public event Action Sitted;
 
         public bool IsMoving => _rawDirection.sqrMagnitude > 0f;
         public Vector3 Direction
@@ -52,6 +56,7 @@ namespace SL.Movement
         private void Awake()
         {
             _gameInput = new GameInput();
+            _gameInput.Enable();
             _dodge = new Dodge();
 
             _stayState = new StayState();
@@ -64,11 +69,10 @@ namespace SL.Movement
 
         private void OnEnable()
         {
-            _gameInput.Enable();
             _gameInput.Player.Dodge.performed += OnDodging;
             _gameInput.Player.Move.performed += OnMoving;
             _gameInput.Player.Move.canceled += OnStaying;
-            _gameInput.Player.Jump.canceled += OnJumping;
+            _gameInput.Player.Jump.performed += OnJumping;
         }
 
         private void OnDisable()
@@ -76,14 +80,33 @@ namespace SL.Movement
             _gameInput.Player.Dodge.performed -= OnDodging;
             _gameInput.Player.Move.performed -= OnMoving;
             _gameInput.Player.Move.canceled -= OnStaying;
-            _gameInput.Player.Jump.canceled -= OnJumping;
+            _gameInput.Player.Jump.performed -= OnJumping;
         }
 
         private void Update() => _currentState.Update();
 
-        public void Init(Transform cameraTransform)
+        public void Init(Transform cameraTransform, Animator animator)
         {
             _camera = cameraTransform;
+            _animator = animator;
+        }
+
+        public void SitDown()
+        {
+            Sitting?.Invoke();
+            enabled = false;
+        }
+
+        public void StandUp()
+        {
+            Sitted?.Invoke();
+            StartCoroutine(DelayedEnabling(_animator.GetCurrentAnimatorStateInfo(0).length));
+        }
+
+        private IEnumerator DelayedEnabling(float delay = 0f)
+        {
+            yield return new WaitForSeconds(delay);
+            enabled = true;
         }
 
         private void OnStaying(InputAction.CallbackContext ctx)
@@ -129,7 +152,7 @@ namespace SL.Movement
             if (_jumpState.OnGround == false)
                 return;
 
-            if (_currentState == _jumpState)
+            if (_currentState == _jumpState || _currentState == _dodgeState)
                 return;
 
             SetState(_jumpState);

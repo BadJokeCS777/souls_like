@@ -44,7 +44,7 @@ namespace SL.Health.Models
                 StateChanged?.Invoke();
 
                 if (_value <= 0f)
-                    _messenger.Publish(new ZeroHealthSignal());
+                    _messenger.Publish(new ZeroHealthMessage());
             }
         }
     }
