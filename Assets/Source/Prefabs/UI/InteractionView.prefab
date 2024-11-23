@@ -144,7 +144,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7794228571918310199}
   - component: {fileID: 6913460932423451138}
-  - component: {fileID: 4074283095971865662}
+  - component: {fileID: 5462410908484883703}
   m_Layer: 5
   m_Name: InteractionView
   m_TagString: Untagged
@@ -184,7 +184,7 @@ CanvasGroup:
   m_Interactable: 1
   m_BlocksRaycasts: 1
   m_IgnoreParentGroups: 0
---- !u!114 &4074283095971865662
+--- !u!114 &5462410908484883703
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -193,7 +193,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1334508480040813871}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 42a0aa850de2459fac589d5a59dd5034, type: 3}
+  m_Script: {fileID: 11500000, guid: 2bd8b0dbe43e944428463f184f0fd4c6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   _text: {fileID: 7718206622465305887}

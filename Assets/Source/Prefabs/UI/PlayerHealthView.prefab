@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1543012675339147375}
   - component: {fileID: 4507023259420028417}
-  - component: {fileID: 3358056322218705778}
+  - component: {fileID: 5202979453441660581}
   m_Layer: 5
   m_Name: PlayerHealthView
   m_TagString: Untagged
@@ -51,7 +51,7 @@ CanvasGroup:
   m_Interactable: 1
   m_BlocksRaycasts: 1
   m_IgnoreParentGroups: 0
---- !u!114 &3358056322218705778
+--- !u!114 &5202979453441660581
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -60,7 +60,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 44031109388306727}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 217302c8d58e4faea304713e3bf5a0bc, type: 3}
+  m_Script: {fileID: 11500000, guid: 3a805b47c55f15a43851c812b045b39a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   _bar: {fileID: 5300538739770804384}

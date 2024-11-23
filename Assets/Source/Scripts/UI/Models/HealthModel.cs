@@ -1,26 +1,21 @@
 ﻿using System;
 using BindingProxy;
-using Loxodon.Framework.Messaging;
 using PropertyChanged;
-using SL.Signals;
 
-namespace SL.Health.Models
+namespace SL.UI.Models
 {
     [AddINotifyPropertyChangedInterface]
     [GenerateFieldProxy]
     [GeneratePropertyProxy]
     public class HealthModel
     {
-        private readonly IMessenger _messenger;
-
         private float _value;
         private float _maxValue;
 
         public event Action StateChanged;
 
-        public HealthModel(IMessenger messenger, float value = 100f)
+        public HealthModel(float value = 100f)
         {
-            _messenger = messenger;
             Value = value;
             MaxValue = value;
         }
@@ -42,9 +37,6 @@ namespace SL.Health.Models
             {
                 _value = value;
                 StateChanged?.Invoke();
-
-                if (_value <= 0f)
-                    _messenger.Publish(new ZeroHealthMessage());
             }
         }
     }

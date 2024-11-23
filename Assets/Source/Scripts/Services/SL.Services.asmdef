@@ -1,12 +1,8 @@
-﻿{
-    "name": "SL.Health",
+{
+    "name": "SL.Services",
     "rootNamespace": "SL",
     "references": [
-        "Loxodon.Framework",
-        "Loxodon.Framework.Binding.Weaving",
-        "Loxodon.Framework.Fody",
-        "Zenject",
-        "SL.Signals"
+        "Loxodon.Framework"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

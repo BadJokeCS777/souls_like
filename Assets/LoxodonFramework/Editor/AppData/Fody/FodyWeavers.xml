@@ -1,9 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Weavers xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<AssemblyNames>
-		<Item>Assembly-CSharp</Item>
-		<Item>SL.Health</Item>
-		<Item>SL.Interactions</Item>
+		<Item>SL.UI</Item>
+		<Item>SL.UI.ViewModels</Item>
+		<Item>SL.UI.Models</Item>
 	</AssemblyNames>
 	<PropertyChanged defaultWeaving ="true" />
 </Weavers>

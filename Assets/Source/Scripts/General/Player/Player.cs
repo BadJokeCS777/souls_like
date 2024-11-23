@@ -1,6 +1,6 @@
 ﻿using System;
-using SL.Health.Models;
 using SL.Movement;
+using SL.UI.Models;
 using UnityEngine;
 using Zenject;
 

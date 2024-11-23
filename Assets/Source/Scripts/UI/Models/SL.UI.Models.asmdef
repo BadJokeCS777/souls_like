@@ -1,17 +1,7 @@
 {
-    "name": "SL.General",
+    "name": "SL.UI.Models",
     "rootNamespace": "SL",
-    "references": [
-        "Cinemachine",
-        "Loxodon.Framework",
-        "Zenject",
-        "SL.Interactions",
-        "SL.Movement",
-        "SL.Services",
-        "SL.UI.Models",
-        "SL.UI.Views",
-        "SL.UI.ViewModels"
-    ],
+    "references": [],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
