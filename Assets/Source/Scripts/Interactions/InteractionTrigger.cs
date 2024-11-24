@@ -9,7 +9,8 @@ namespace SL.Interactions
     public class InteractionTrigger : MonoBehaviour
     {
         [SerializeField] private string _text;
-        [SerializeField] private Sprite _icon;
+        [SerializeField] private Sprite _buttonIcon;
+        [SerializeField] private string _buttonText;
 
         private IMessenger _messenger;
 
@@ -27,7 +28,8 @@ namespace SL.Interactions
             if (other.TryGetComponent(out Interactor interactor) == false)
                 return;
 
-            _messenger.Publish(new ShowInteractionMessage(_text, _icon));
+            PublishShowMessage();
+
             Entered?.Invoke(interactor);
         }
 
@@ -38,6 +40,14 @@ namespace SL.Interactions
 
             _messenger.Publish(new HideInteractionMessage());
             Exited?.Invoke(interactor);
+        }
+
+        private void PublishShowMessage()
+        {
+            if (_buttonIcon != null)
+                _messenger.Publish(new ShowInteractionMessage(_text, _buttonIcon));
+            else if (string.IsNullOrEmpty(_buttonText) == false)
+                _messenger.Publish(new ShowInteractionMessage(_text, _buttonText));
         }
     }
 }

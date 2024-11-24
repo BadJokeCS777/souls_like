@@ -15,7 +15,8 @@ namespace SL.UI.ViewModels
 
         public bool Active { get; set; }
         public string Text { get; set; }
-        public Sprite Icon { get; set; }
+        public string ButtonText { get; set; }
+        public Sprite ButtonIcon { get; set; }
 
         protected override void OnInitialize()
         {
@@ -29,7 +30,8 @@ namespace SL.UI.ViewModels
         {
             Active = true;
             Text = message.Text;
-            Icon = message.Icon;
+            ButtonText = message.ButtonText;
+            ButtonIcon = message.ButtonIcon;
         }
 
         private void OnHideInteractionMessage(HideInteractionMessage message)

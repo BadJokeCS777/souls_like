@@ -5,12 +5,21 @@ namespace SL.Signals
     public struct ShowInteractionMessage
     {
         public readonly string Text;
-        public readonly Sprite Icon;
+        public readonly string ButtonText;
+        public readonly Sprite ButtonIcon;
 
-        public ShowInteractionMessage(string text, Sprite icon)
+        public ShowInteractionMessage(string text, Sprite button)
         {
             Text = text;
-            Icon = icon;
+            ButtonIcon = button;
+            ButtonText = string.Empty;
+        }
+
+        public ShowInteractionMessage(string text, string button)
+        {
+            Text = text;
+            ButtonText = button;
+            ButtonIcon = null;
         }
     }
 }

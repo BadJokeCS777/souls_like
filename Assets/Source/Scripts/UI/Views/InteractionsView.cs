@@ -9,6 +9,7 @@ namespace SL.UI.Views
     public class InteractionsView : ViewBase<InteractionsView, InteractionsViewModel>
     {
         [SerializeField] private TMP_Text _text;
+        [SerializeField] private TMP_Text _buttonText;
         [SerializeField] private Image _buttonIcon;
         [SerializeField] private GameObject _container;
 
@@ -18,9 +19,21 @@ namespace SL.UI.Views
                 .For(v => v.text)
                 .To(vm => vm.Text)
                 .OneWay();
+            bindingSet.Bind(_buttonIcon.gameObject)
+                .For(v => v.activeSelf)
+                .ToExpression(vm => vm.ButtonIcon != null)
+                .OneWay();
             bindingSet.Bind(_buttonIcon)
                 .For(v => v.sprite)
-                .To(vm => vm.Icon)
+                .To(vm => vm.ButtonIcon)
+                .OneWay();
+            bindingSet.Bind(_buttonText.gameObject)
+                .For(v => v.activeSelf)
+                .ToExpression(vm => vm.ButtonText != null)
+                .OneWay();
+            bindingSet.Bind(_buttonText)
+                .For(v => v.text)
+                .To(vm => vm.ButtonText)
                 .OneWay();
             bindingSet.Bind(_container)
                 .For(v => v.activeSelf)
