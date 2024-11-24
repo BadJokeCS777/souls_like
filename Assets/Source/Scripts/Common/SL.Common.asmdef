@@ -1,13 +1,8 @@
 {
-    "name": "SL.Movement",
+    "name": "SL.Common",
     "rootNamespace": "SL",
     "references": [
-        "Loxodon.Framework",
-        "Unity.InputSystem",
-        "SL.Common",
-        "SL.Input",
-        "SL.Signals",
-        "SL.States"
+        "Loxodon.Framework"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

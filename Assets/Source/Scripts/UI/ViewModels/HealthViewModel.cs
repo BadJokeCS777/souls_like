@@ -23,6 +23,7 @@ namespace SL.UI.ViewModels
         protected override void OnInitialize()
         {
             _model.StateChanged += OnStateChanged;
+            Subscribe<RestorePlayerMessage>(OnRestorePlayerMessage);
             OnStateChanged();
         }
 
@@ -42,5 +43,7 @@ namespace SL.UI.ViewModels
             if (FillAmount <= 0f)
                 Publish(new ZeroHealthMessage());
         }
+
+        private void OnRestorePlayerMessage() => _model.Value = _model.MaxValue;
     }
 }

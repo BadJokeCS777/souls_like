@@ -1,5 +1,5 @@
 ﻿using System;
-using Loxodon.Framework.Messaging;
+using SL.Common;
 using SL.Input;
 using SL.Movement;
 using SL.Signals;
@@ -10,30 +10,21 @@ using Zenject;
 
 namespace SL.General.Player
 {
-    public class Player : MonoBehaviour, IHealthOwner
+    public class Player : MessengerBehaviour, IHealthOwner
     {
         [SerializeField] private PlayerMovement _movement;
-        [SerializeField] private PlayerAnimator _animator;
 
         private GameInput _gameInput;
         private HealthModel _healthModel;
-        private IMessenger _messenger;
 
         [Inject]
-        private void Construct(HealthModel model, IMessenger messenger)
+        private void Construct(HealthModel model)
         {
             _healthModel = model;
-            _messenger = messenger;
 
             _gameInput = new GameInput();
             _gameInput.Enable();
-            //_gameInput.Player.Interaction.canceled += OnInteraction;
             _gameInput.Player.Interaction.performed += OnInteraction;
-        }
-
-        public void Init(Transform cameraTransform)
-        {
-            _movement.Init(cameraTransform, _animator.Animator);
         }
 
         public void ApplyDamage(float value)
@@ -48,6 +39,6 @@ namespace SL.General.Player
 
         public void StandUp() => _movement.StandUp();
 
-        private void OnInteraction(InputAction.CallbackContext ctx) => _messenger.Publish(new InteractionMessage());
+        private void OnInteraction(InputAction.CallbackContext ctx) => Publish(new InteractionMessage());
     }
 }

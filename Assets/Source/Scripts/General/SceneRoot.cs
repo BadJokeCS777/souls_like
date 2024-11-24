@@ -1,19 +1,18 @@
 using Cinemachine;
-using SL.General.Player;
 using UnityEngine;
+using Zenject;
 
 namespace SL.General
 {
     public class SceneRoot : MonoBehaviour
     {
         [SerializeField] private CinemachineVirtualCameraBase _mainCamera;
-        [SerializeField] private PlayerSpawner _playerSpawner;
+        [SerializeField] private Player.Player _playerPrefab;
 
-        private void Start()
+        [Inject]
+        private void Construct(DiContainer container)
         {
-            Transform cameraTransform = Camera.main.transform;
-            Player.Player player = _playerSpawner.Spawn(cameraTransform);
-
+            var player = container.InstantiatePrefabForComponent<Player.Player>(_playerPrefab.gameObject);
             InitCameras(player.transform, player.transform);
         }
 

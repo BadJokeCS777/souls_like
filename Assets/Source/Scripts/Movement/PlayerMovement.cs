@@ -1,14 +1,16 @@
 ﻿using System;
-using System.Collections;
+using SL.Common;
 using SL.Input;
 using SL.Movement.States;
+using SL.Signals;
 using SL.States;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using Zenject;
 
 namespace SL.Movement
 {
-    public class PlayerMovement : MonoBehaviour, IMovement
+    public class PlayerMovement : MessengerBehaviour, IMovement
     {
         [SerializeField] private Rigidbody _rigidbody;
         [SerializeField] private Transform _model;
@@ -19,7 +21,6 @@ namespace SL.Movement
         [SerializeField] private float _stepBackDistance = 1f;
         [SerializeField] private float _jumpHeight = 1f;
 
-        private Animator _animator;
         private GameInput _gameInput;
         private Transform _camera;
         private Vector3 _rawDirection;
@@ -31,6 +32,7 @@ namespace SL.Movement
         private DodgeState _dodgeState;
         private JumpState _jumpState;
 
+        //TODO: check events using
         public event Action Moving;
         public event Action Staying;
         public event Action Dodging;
@@ -38,7 +40,7 @@ namespace SL.Movement
         public event Action Jumping;
         public event Action Jumped;
         public event Action Sitting;
-        public event Action Sitted;
+        public event Action Standing;
 
         public bool IsMoving => _rawDirection.sqrMagnitude > 0f;
         public Vector3 Direction
@@ -53,8 +55,10 @@ namespace SL.Movement
 
         private bool CantDodge => _jumpState.OnGround == false || _currentState == _dodgeState || _currentState == _jumpState;
 
-        private void Awake()
+        [Inject]
+        private void Construct([Inject(Id = InjectionsConsts.CameraTransformId)]Transform cameraTransform)
         {
+            _camera = cameraTransform;
             _gameInput = new GameInput();
             _gameInput.Enable();
             _dodge = new Dodge();
@@ -65,6 +69,7 @@ namespace SL.Movement
             _jumpState = new JumpState(_jumpHeight, _rigidbody, _groundCheckPoint, OnJumpCompleted);
 
             SetState(_stayState);
+            Subscribe<EnableMovementMessage>(OnEnableMovementMessage);
         }
 
         private void OnEnable()
@@ -85,29 +90,13 @@ namespace SL.Movement
 
         private void Update() => _currentState.Update();
 
-        public void Init(Transform cameraTransform, Animator animator)
-        {
-            _camera = cameraTransform;
-            _animator = animator;
-        }
-
         public void SitDown()
         {
             Sitting?.Invoke();
             enabled = false;
         }
 
-        public void StandUp()
-        {
-            Sitted?.Invoke();
-            StartCoroutine(DelayedEnabling(_animator.GetCurrentAnimatorStateInfo(0).length));
-        }
-
-        private IEnumerator DelayedEnabling(float delay = 0f)
-        {
-            yield return new WaitForSeconds(delay);
-            enabled = true;
-        }
+        public void StandUp() => Standing?.Invoke();
 
         private void OnStaying(InputAction.CallbackContext ctx)
         {
@@ -190,6 +179,11 @@ namespace SL.Movement
         {
             _currentState = state;
             _currentState.Begin();
+        }
+
+        private void OnEnableMovementMessage(EnableMovementMessage message)
+        {
+            enabled = true;
         }
     }
 }

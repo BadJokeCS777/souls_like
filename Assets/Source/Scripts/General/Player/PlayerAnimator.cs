@@ -4,7 +4,6 @@ using UnityEngine;
 
 namespace SL.General.Player
 {
-    [RequireComponent(typeof(Animator))]
     public class PlayerAnimator : MonoBehaviour
     {
         private const float HeavyRoll = 2f;
@@ -26,8 +25,6 @@ namespace SL.General.Player
         private float _speed = 0f;
         private Coroutine _speedChanging;
 
-        public Animator Animator => _animator;
-
         private float DodgeValue
         {
             get
@@ -48,7 +45,7 @@ namespace SL.General.Player
             _playerMovement.Jumping += OnJumping;
             _playerMovement.Jumped += OnJumped;
             _playerMovement.Sitting += OnSitting;
-            _playerMovement.Sitted += OnSitted;
+            _playerMovement.Standing += OnStanding;
         }
 
         private void OnDisable()
@@ -60,12 +57,22 @@ namespace SL.General.Player
             _playerMovement.Jumping -= OnJumping;
             _playerMovement.Jumped -= OnJumped;
             _playerMovement.Sitting -= OnSitting;
-            _playerMovement.Sitted -= OnSitted;
+            _playerMovement.Standing -= OnStanding;
+        }
+
+        private void OnDodging()
+        {
+            _animator.SetFloat(DodgeType, DodgeValue);
+            _animator.SetTrigger(Dodge);
         }
 
         private void OnMoving() => StartChangeSpeed(MovingSpeed);
-
         private void OnStaying() => StartChangeSpeed(0f);
+        private void OnDodged() => _animator.SetBool(Dodge, false);
+        private void OnJumping() => _animator.SetTrigger(Jump);
+        private void OnJumped() => _animator.ResetTrigger(Jump);
+        private void OnSitting() => _animator.SetBool(Sitting, true);
+        private void OnStanding() => _animator.SetBool(Sitting, false);
 
         private void StartChangeSpeed(float newValue)
         {
@@ -89,18 +96,5 @@ namespace SL.General.Player
                 _animator.SetFloat(Speed, _speed);
             }
         }
-
-        private void OnDodging()
-        {
-            _animator.SetFloat(DodgeType, DodgeValue);
-            _animator.SetTrigger(Dodge);
-        }
-
-        private void OnDodged() => _animator.SetBool(Dodge, false);
-
-        private void OnJumping() => _animator.SetTrigger(Jump);
-        private void OnJumped() => _animator.ResetTrigger(Jump);
-        private void OnSitting() => _animator.SetBool(Sitting, true);
-        private void OnSitted() => _animator.SetBool(Sitting, false);
     }
 }

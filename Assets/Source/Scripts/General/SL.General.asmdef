@@ -6,6 +6,7 @@
         "Loxodon.Framework",
         "Unity.InputSystem",
         "Zenject",
+        "SL.Common",
         "SL.Interactions",
         "SL.Input",
         "SL.Movement",
