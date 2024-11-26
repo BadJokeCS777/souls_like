@@ -10,35 +10,46 @@ using Zenject;
 
 namespace SL.Movement
 {
-    public class PlayerMovement : MessengerBehaviour, IMovement
+    public class PlayerMovement : MessengerBehaviour
     {
-        [SerializeField] private Rigidbody _rigidbody;
         [SerializeField] private Transform _model;
-        [SerializeField] private Transform _groundCheckPoint;
         [SerializeField] private float _speed = 3f;
         [SerializeField, Range(0.01f, 1f)] private float _rotationSpeedRatio = 0.5f;
+        [SerializeField] private CharacterController _characterController;
+
+        [Header("Rolls/Dodge")]
         [SerializeField] private float _rollingDistance = 3.5f;
         [SerializeField] private float _stepBackDistance = 1f;
+
+        [Header("Jump")]
+        [SerializeField] private bool _isJumping;
+        [SerializeField] private float _groundedGravity = -0.05f;
         [SerializeField] private float _jumpHeight = 1f;
+        [SerializeField] private float _jumpTime = 1f;
+        [SerializeField] private float _fallMultiplier = 2f;
+
+        private float _gravity = -9.8f;
+        private float _initialJumpVelocity = 1f;
 
         private GameInput _gameInput;
         private Transform _camera;
         private Vector3 _rawDirection;
+        private Vector3 _direction;
+        private Vector3 _movement;
         private Dodge _dodge;
 
         private State _currentState;
-        private StayState _stayState;
-        private MoveState _moveState;
         private DodgeState _dodgeState;
-        private JumpState _jumpState;
 
-        //TODO: check events using
+        private bool _isMovementPressed;
+        private bool _isJumpPressed;
+
         public event Action Moving;
         public event Action Staying;
         public event Action Dodging;
         public event Action Dodged;
-        public event Action Jumping;
-        public event Action Jumped;
+        public event Action NotGrounded;
+        public event Action Grounded;
         public event Action Sitting;
         public event Action Standing;
 
@@ -53,42 +64,51 @@ namespace SL.Movement
             }
         }
 
-        private bool CantDodge => _jumpState.OnGround == false || _currentState == _dodgeState || _currentState == _jumpState;
+        private bool CantDodge => _characterController.isGrounded == false || _currentState == _dodgeState;
 
         [Inject]
         private void Construct([Inject(Id = InjectionsConsts.CameraTransformId)]Transform cameraTransform)
         {
             _camera = cameraTransform;
             _gameInput = new GameInput();
-            _gameInput.Enable();
             _dodge = new Dodge();
-
-            _stayState = new StayState();
-            _moveState = new MoveState(_speed, _rotationSpeedRatio, transform, _model, this);
             _dodgeState = new DodgeState(_speed, transform, _dodge, OnDodgeCompleted);
-            _jumpState = new JumpState(_jumpHeight, _rigidbody, _groundCheckPoint, OnJumpCompleted);
 
-            SetState(_stayState);
+            SetupJumpVariables();
             Subscribe<EnableMovementMessage>(OnEnableMovementMessage);
         }
 
         private void OnEnable()
         {
+            _gameInput.Enable();
+
+            _gameInput.Player.Jump.started += OnJumping;
+            _gameInput.Player.Jump.canceled += OnJumping;
+
             _gameInput.Player.Dodge.performed += OnDodging;
-            _gameInput.Player.Move.performed += OnMoving;
-            _gameInput.Player.Move.canceled += OnStaying;
-            _gameInput.Player.Jump.performed += OnJumping;
         }
 
         private void OnDisable()
         {
+            _gameInput.Disable();
+
+            _gameInput.Player.Jump.started -= OnJumping;
+            _gameInput.Player.Jump.canceled -= OnJumping;
+
             _gameInput.Player.Dodge.performed -= OnDodging;
-            _gameInput.Player.Move.performed -= OnMoving;
-            _gameInput.Player.Move.canceled -= OnStaying;
-            _gameInput.Player.Jump.performed -= OnJumping;
         }
 
-        private void Update() => _currentState.Update();
+        private void Update()
+        {
+            HandleMovementInput();
+            HandleRotation();
+
+            _characterController.Move(_speed * Time.deltaTime * _movement);
+
+            HandleGravity();
+            HandleJump();
+            HandleGrounded();
+        }
 
         public void SitDown()
         {
@@ -97,28 +117,6 @@ namespace SL.Movement
         }
 
         public void StandUp() => Standing?.Invoke();
-
-        private void OnStaying(InputAction.CallbackContext ctx)
-        {
-            _rawDirection = Vector3.zero;
-
-            if (_currentState == _jumpState || _dodge.IsProcessing)
-                return;
-
-            SetState(_stayState);
-            Staying?.Invoke();
-        }
-
-        private void OnMoving(InputAction.CallbackContext ctx)
-        {
-            var input = ctx.ReadValue<Vector2>();
-            _rawDirection = new Vector3(input.x, 0f, input.y);
-
-            if (_currentState == _jumpState || _currentState == _moveState || _dodge.IsProcessing)
-                return;
-
-            SwitchToMoveState();
-        }
 
         private void OnDodging(InputAction.CallbackContext ctx)
         {
@@ -136,54 +134,81 @@ namespace SL.Movement
             Dodging?.Invoke();
         }
 
-        private void OnJumping(InputAction.CallbackContext ctx)
+        private void OnJumping(InputAction.CallbackContext ctx) => _isJumpPressed = ctx.ReadValueAsButton();
+
+        private void OnDodgeCompleted() => Dodged?.Invoke();
+
+        private void OnEnableMovementMessage(EnableMovementMessage message) => enabled = true;
+
+        private void HandleMovementInput()
         {
-            if (_jumpState.OnGround == false)
-                return;
+            var input = _gameInput.Player.Move.ReadValue<Vector2>();
+            _rawDirection = new Vector3(input.x, 0f, input.y);
+            _isMovementPressed = input.sqrMagnitude > 0f;
 
-            if (_currentState == _jumpState || _currentState == _dodgeState)
-                return;
+            _direction = Direction;
+            _movement.x = _direction.x;
+            _movement.z = _direction.z;
 
-            SetState(_jumpState);
-            Jumping?.Invoke();
-        }
-
-        private void OnDodgeCompleted()
-        {
-            Dodged?.Invoke();
-            OnActionEnd();
-        }
-
-        private void OnJumpCompleted()
-        {
-            //TODO: finish jump
-            // Jumped?.Invoke();
-            OnActionEnd();
-        }
-
-        private void OnActionEnd()
-        {
-            if (IsMoving)
-                SwitchToMoveState();
+            if (_isMovementPressed)
+                Moving?.Invoke();
             else
-                OnStaying(new InputAction.CallbackContext());
+                Staying?.Invoke();
         }
 
-        private void SwitchToMoveState()
+        private void HandleRotation()
         {
-            SetState(_moveState);
-            Moving?.Invoke();
+            if (_isMovementPressed == false)
+                return;
+
+            Quaternion targetRotation = Quaternion.LookRotation(_direction);
+            _model.rotation = Quaternion.Slerp(_model.rotation, targetRotation, _rotationSpeedRatio);
         }
 
-        private void SetState(State state)
+        private void HandleGravity()
         {
-            _currentState = state;
-            _currentState.Begin();
+            bool isFalling = _movement.y <= 0f;
+            if (_characterController.isGrounded)
+            {
+                _movement.y = _groundedGravity;
+            }
+            else
+            {
+                float multiplier = isFalling ? _fallMultiplier : 1f;
+                float previousYVelocity = _movement.y;
+                float newYVelocity = _movement.y + _gravity * multiplier * Time.deltaTime;
+                float nextYVelocity = (previousYVelocity + newYVelocity) * 0.5f;
+                _movement.y = nextYVelocity;
+            }
         }
 
-        private void OnEnableMovementMessage(EnableMovementMessage message)
+        private void HandleJump()
         {
-            enabled = true;
+            if (_isJumping == false && _characterController.isGrounded && _isJumpPressed)
+            {
+                _isJumping = true;
+                _movement.y = _initialJumpVelocity * 0.5f;
+            }
+            else if(_isJumpPressed == false && _isJumping && _characterController.isGrounded)
+            {
+                _isJumping = false;
+            }
+        }
+
+        private void HandleGrounded()
+        {
+            if (_characterController.isGrounded)
+                Grounded?.Invoke();
+            else
+                NotGrounded?.Invoke();
+        }
+
+        private void SetupJumpVariables()
+        {
+            float doubleJumpHeight = 2 * _jumpHeight;
+            float timeToApex = _jumpTime * 0.5f;
+            _gravity = -doubleJumpHeight / Mathf.Pow(timeToApex, 2);
+            _initialJumpVelocity = doubleJumpHeight / timeToApex;
         }
     }
 }

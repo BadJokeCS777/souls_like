@@ -52,7 +52,7 @@ namespace SL.Input
                     ""type"": ""Value"",
                     ""id"": ""b2593e15-65b1-452e-91fe-fce29962a035"",
                     ""expectedControlType"": ""Vector2"",
-                    ""processors"": """",
+                    ""processors"": ""NormalizeVector2"",
                     ""interactions"": """",
                     ""initialStateCheck"": true
                 },
