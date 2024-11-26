@@ -1,5 +1,6 @@
 ﻿using Loxodon.Framework.Binding;
 using Loxodon.Framework.Contexts;
+using Loxodon.Framework.Execution;
 using Loxodon.Framework.Messaging;
 using SL.Common;
 using SL.Services;
@@ -17,9 +18,11 @@ namespace SL.General.Installers.MonoInstallers
         public override void InstallBindings()
         {
             BundleSetInitialization();
-            Container.Bind<Transform>().WithId(InjectionsConsts.CameraTransformId).FromInstance(_cameraTransform).AsSingle();
-            Container.Bind<IViewModelsFactory>().To<ViewModelsFactory>().AsSingle();
+            Container.Bind<ICoroutineExecutor>().To<CoroutineExecutor>().AsSingle();
             Container.Bind<IMessenger>().To<Messenger>().AsSingle();
+            Container.Bind<IViewModelsFactory>().To<ViewModelsFactory>().AsSingle();
+            Container.Bind<Transform>().WithId(InjectionsConsts.CameraTransformId).FromInstance(_cameraTransform).AsSingle();
+            Container.Bind<PlayerAnimatorModel>().AsSingle();
             Container.Bind<HealthModel>().AsSingle();
         }
 

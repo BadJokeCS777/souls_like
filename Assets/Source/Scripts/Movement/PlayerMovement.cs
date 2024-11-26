@@ -1,5 +1,4 @@
-﻿using System;
-using SL.Common;
+﻿using SL.Common;
 using SL.Input;
 using SL.Movement.States;
 using SL.Signals;
@@ -14,7 +13,7 @@ namespace SL.Movement
     {
         [SerializeField] private Transform _model;
         [SerializeField] private float _speed = 3f;
-        [SerializeField, Range(0.01f, 1f)] private float _rotationSpeedRatio = 0.5f;
+        [SerializeField] private float _rotationSpeedRatio = 15f;
         [SerializeField] private CharacterController _characterController;
 
         [Header("Rolls/Dodge")]
@@ -31,8 +30,10 @@ namespace SL.Movement
         private float _gravity = -9.8f;
         private float _initialJumpVelocity = 1f;
 
-        private GameInput _gameInput;
         private Transform _camera;
+        private PlayerAnimatorModel _animatorModel;
+
+        private GameInput _gameInput;
         private Vector3 _rawDirection;
         private Vector3 _direction;
         private Vector3 _movement;
@@ -44,32 +45,24 @@ namespace SL.Movement
         private bool _isMovementPressed;
         private bool _isJumpPressed;
 
-        public event Action Moving;
-        public event Action Staying;
-        public event Action Dodging;
-        public event Action Dodged;
-        public event Action NotGrounded;
-        public event Action Grounded;
-        public event Action Sitting;
-        public event Action Standing;
-
-        public bool IsMoving => _rawDirection.sqrMagnitude > 0f;
-        public Vector3 Direction
-        {
-            get
-            {
-                Vector3 direction = _camera.forward * _rawDirection.z + _camera.right * _rawDirection.x;
-                direction.y = 0f;
-                return direction.normalized;
-            }
-        }
+        private bool IsMoving => _rawDirection.sqrMagnitude > 0f;
 
         private bool CantDodge => _characterController.isGrounded == false || _currentState == _dodgeState;
 
+        private Vector3 CalculateDirection()
+        {
+            Vector3 direction = _camera.forward * _rawDirection.z + _camera.right * _rawDirection.x;
+            direction.y = 0f;
+            return direction.normalized;
+        }
+
         [Inject]
-        private void Construct([Inject(Id = InjectionsConsts.CameraTransformId)]Transform cameraTransform)
+        private void Construct([Inject(Id = InjectionsConsts.CameraTransformId)]Transform cameraTransform,
+            PlayerAnimatorModel animatorModel)
         {
             _camera = cameraTransform;
+            _animatorModel = animatorModel;
+
             _gameInput = new GameInput();
             _dodge = new Dodge();
             _dodgeState = new DodgeState(_speed, transform, _dodge, OnDodgeCompleted);
@@ -94,7 +87,6 @@ namespace SL.Movement
 
             _gameInput.Player.Jump.started -= OnJumping;
             _gameInput.Player.Jump.canceled -= OnJumping;
-
             _gameInput.Player.Dodge.performed -= OnDodging;
         }
 
@@ -112,11 +104,11 @@ namespace SL.Movement
 
         public void SitDown()
         {
-            Sitting?.Invoke();
+            _animatorModel.IsBonfireSitting = true;
             enabled = false;
         }
 
-        public void StandUp() => Standing?.Invoke();
+        public void StandUp() => _animatorModel.IsBonfireSitting = false;
 
         private void OnDodging(InputAction.CallbackContext ctx)
         {
@@ -124,19 +116,19 @@ namespace SL.Movement
                 return;
 
             if (IsMoving)
-                _dodge.Init(_rollingDistance, Direction);
+                _dodge.Init(_rollingDistance, _direction);
             else
                 _dodge.Init(_stepBackDistance, -_model.forward);
 
             _dodge.Reset();
             _currentState = _dodgeState;
 
-            Dodging?.Invoke();
+            _animatorModel.IsDodging = true;
         }
 
         private void OnJumping(InputAction.CallbackContext ctx) => _isJumpPressed = ctx.ReadValueAsButton();
 
-        private void OnDodgeCompleted() => Dodged?.Invoke();
+        private void OnDodgeCompleted() => _animatorModel.IsDodging = false;
 
         private void OnEnableMovementMessage(EnableMovementMessage message) => enabled = true;
 
@@ -146,14 +138,11 @@ namespace SL.Movement
             _rawDirection = new Vector3(input.x, 0f, input.y);
             _isMovementPressed = input.sqrMagnitude > 0f;
 
-            _direction = Direction;
+            _direction = CalculateDirection();
             _movement.x = _direction.x;
             _movement.z = _direction.z;
 
-            if (_isMovementPressed)
-                Moving?.Invoke();
-            else
-                Staying?.Invoke();
+            _animatorModel.IsMoving = _isMovementPressed;
         }
 
         private void HandleRotation()
@@ -162,7 +151,8 @@ namespace SL.Movement
                 return;
 
             Quaternion targetRotation = Quaternion.LookRotation(_direction);
-            _model.rotation = Quaternion.Slerp(_model.rotation, targetRotation, _rotationSpeedRatio);
+            float t = _rotationSpeedRatio * Time.deltaTime;
+            _model.rotation = Quaternion.Slerp(_model.rotation, targetRotation, t);
         }
 
         private void HandleGravity()
@@ -171,15 +161,14 @@ namespace SL.Movement
             if (_characterController.isGrounded)
             {
                 _movement.y = _groundedGravity;
+                return;
             }
-            else
-            {
-                float multiplier = isFalling ? _fallMultiplier : 1f;
-                float previousYVelocity = _movement.y;
-                float newYVelocity = _movement.y + _gravity * multiplier * Time.deltaTime;
-                float nextYVelocity = (previousYVelocity + newYVelocity) * 0.5f;
-                _movement.y = nextYVelocity;
-            }
+
+            float multiplier = isFalling ? _fallMultiplier : 1f;
+            float previousYVelocity = _movement.y;
+            float newYVelocity = _movement.y + _gravity * multiplier * Time.deltaTime;
+            float nextYVelocity = (previousYVelocity + newYVelocity) * 0.5f;
+            _movement.y = nextYVelocity;
         }
 
         private void HandleJump()
@@ -195,13 +184,7 @@ namespace SL.Movement
             }
         }
 
-        private void HandleGrounded()
-        {
-            if (_characterController.isGrounded)
-                Grounded?.Invoke();
-            else
-                NotGrounded?.Invoke();
-        }
+        private void HandleGrounded() => _animatorModel.IsGrounded = _characterController.isGrounded;
 
         private void SetupJumpVariables()
         {
