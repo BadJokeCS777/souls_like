@@ -2,6 +2,6 @@
 {
     public static class InjectionsConsts
     {
-        public const string CameraTransformId = "Camera";
+        public const string CameraId = "Camera";
     }
 }

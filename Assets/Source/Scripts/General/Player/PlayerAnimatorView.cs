@@ -8,20 +8,15 @@ namespace SL.General.Player
 {
     public class PlayerAnimatorView : MonoBehaviour
     {
-        //TODO: move weight to player stats
-        //TODO: move all to config
-        [SerializeField, Min(0f)] private float _weight = 0.25f;
-        [SerializeField, Min(0f)] private float _heavyRollThreshold = 0.5f;
-        [SerializeField] private float _movingSpeed = 1f;
-        [SerializeField, Min(0f)] private float _movingChangeDuration = 0.1f;
         [SerializeField] private PlayerAnimatorBindings _animatorBindings;
+        [SerializeField] private AnimationsSettings _settings;
 
         private PlayerAnimatorViewModel _viewModel;
 
         [Inject]
         private void Construct(ICoroutineExecutor coroutineExecutor, PlayerAnimatorModel model)
         {
-            _viewModel = new PlayerAnimatorViewModel(_weight, _heavyRollThreshold, _movingSpeed, _movingChangeDuration, coroutineExecutor, model);
+            _viewModel = new PlayerAnimatorViewModel(_settings, coroutineExecutor, model);
             Bind();
         }
 

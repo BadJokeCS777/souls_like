@@ -21,7 +21,7 @@ namespace SL.General.Installers.MonoInstallers
             Container.Bind<ICoroutineExecutor>().To<CoroutineExecutor>().AsSingle();
             Container.Bind<IMessenger>().To<Messenger>().AsSingle();
             Container.Bind<IViewModelsFactory>().To<ViewModelsFactory>().AsSingle();
-            Container.Bind<Transform>().WithId(InjectionsConsts.CameraTransformId).FromInstance(_cameraTransform).AsSingle();
+            Container.Bind<Transform>().WithId(InjectionsConsts.CameraId).FromInstance(_cameraTransform).AsSingle();
             Container.Bind<PlayerAnimatorModel>().AsSingle();
             Container.Bind<HealthModel>().AsSingle();
         }

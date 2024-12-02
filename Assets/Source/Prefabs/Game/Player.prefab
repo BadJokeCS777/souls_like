@@ -88,73 +88,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _model: {fileID: 7188305045843375806}
-  _speed: 3.5
-  _rotationSpeedRatio: 35
   _characterController: {fileID: 6397404423633958477}
   _animator: {fileID: 4961234445978387195}
-  _rollingDistance: 6
-  _stepBackDistance: 2
-  _stepBackCurve:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 0
-      inSlope: 0.87843376
-      outSlope: 0.87843376
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0.1430601
-    - serializedVersion: 3
-      time: 0.8856896
-      value: 1
-      inSlope: -0.011937664
-      outSlope: -0.011937664
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.30797955
-    - serializedVersion: 3
-      time: 1
-      value: 1
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 34
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
-  _roleCurve:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 0
-      inSlope: 1.6664308
-      outSlope: 1.6664308
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0.058027077
-    - serializedVersion: 3
-      time: 1
-      value: 1
-      inSlope: 0.1380382
-      outSlope: 0.1380382
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.102514505
-      outWeight: 0
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
-  _groundedGravity: -9.8
-  _jumpHeight: 1.5
-  _jumpTime: 1
-  _fallMultiplier: 2
+  _settings: {fileID: 11400000, guid: 4086b8f904d97a342891499532b16369, type: 2}
 --- !u!114 &661231670572487668
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -281,6 +217,7 @@ MonoBehaviour:
   _movingSpeed: 1
   _movingChangeDuration: 0.1
   _animatorBindings: {fileID: 8163364553879256195}
+  _settings: {fileID: 11400000, guid: b12444726952b824da1d7adb301c6528, type: 2}
 --- !u!114 &8163364553879256195
 MonoBehaviour:
   m_ObjectHideFlags: 0
