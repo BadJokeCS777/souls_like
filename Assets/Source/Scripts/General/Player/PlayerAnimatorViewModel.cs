@@ -20,16 +20,18 @@ namespace SL.General.Player
         public readonly PlayerAnimatorModel Model;
 
         private readonly float _weight;
+        private readonly float _heavyRollThreshold;
         private readonly float _movingSpeed;
         private readonly float _movingChangeDuration;
         private readonly ICoroutineExecutor _coroutineExecutor;
 
         private IAsyncResult _speedChanging;
 
-        public PlayerAnimatorViewModel(float weight, float movingSpeed, float movingChangeDuration,
+        public PlayerAnimatorViewModel(float weight, float heavyRollThreshold, float movingSpeed, float movingChangeDuration,
             ICoroutineExecutor coroutineExecutor, PlayerAnimatorModel model)
         {
             _weight = weight;
+            _heavyRollThreshold = heavyRollThreshold;
             _movingSpeed = movingSpeed;
             _movingChangeDuration = movingChangeDuration;
             _coroutineExecutor = coroutineExecutor;
@@ -38,19 +40,15 @@ namespace SL.General.Player
             Model.IsDodgingChanged += OnIsDodgingChanged;
         }
 
-        public float DodgeValue
-        {
-            get
-            {
-                if (Model.IsMoving)
-                    return _weight > 0.5f ? HeavyRoll : LightRoll;
-
-                return StepBack;
-            }
-        }
-
         public float Speed { get; set; }
         public bool IsDodging { get; set; }
+
+        private float DodgeValue =>
+            Model.IsMoving
+                ? _weight > _heavyRollThreshold
+                    ? HeavyRoll
+                    : LightRoll
+                : StepBack;
 
         private void StartChangeSpeed(float newValue)
         {
@@ -73,6 +71,7 @@ namespace SL.General.Player
         }
 
         private void OnIsMovingChanged() => StartChangeSpeed(Model.IsMoving ? _movingSpeed : 0f);
+
         private void OnIsDodgingChanged()
         {
             Model.DodgeValue = DodgeValue;

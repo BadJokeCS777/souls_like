@@ -11,6 +11,7 @@ namespace SL.General.Player
         //TODO: move weight to player stats
         //TODO: move all to config
         [SerializeField, Min(0f)] private float _weight = 0.25f;
+        [SerializeField, Min(0f)] private float _heavyRollThreshold = 0.5f;
         [SerializeField] private float _movingSpeed = 1f;
         [SerializeField, Min(0f)] private float _movingChangeDuration = 0.1f;
         [SerializeField] private PlayerAnimatorBindings _animatorBindings;
@@ -20,7 +21,7 @@ namespace SL.General.Player
         [Inject]
         private void Construct(ICoroutineExecutor coroutineExecutor, PlayerAnimatorModel model)
         {
-            _viewModel = new PlayerAnimatorViewModel(_weight, _movingSpeed, _movingChangeDuration, coroutineExecutor, model);
+            _viewModel = new PlayerAnimatorViewModel(_weight, _heavyRollThreshold, _movingSpeed, _movingChangeDuration, coroutineExecutor, model);
             Bind();
         }
 

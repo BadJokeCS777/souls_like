@@ -8,18 +8,23 @@ namespace SL.General
     {
         [SerializeField] private CinemachineVirtualCameraBase _mainCamera;
         [SerializeField] private Player.Player _playerPrefab;
+        [SerializeField] private Transform _spawnPoint;
 
         [Inject]
         private void Construct(DiContainer container)
         {
-            var player = container.InstantiatePrefabForComponent<Player.Player>(_playerPrefab.gameObject);
-            InitCameras(player.transform, player.transform);
+            var player = container.InstantiatePrefabForComponent<Player.Player>(
+                _playerPrefab.gameObject,
+                _spawnPoint.position,
+                _spawnPoint.rotation,
+                null);
+            InitCameras(player.transform);
         }
 
-        private void InitCameras(Transform follow, Transform lookAt)
+        private void InitCameras(Transform target)
         {
-            _mainCamera.Follow = follow;
-            _mainCamera.LookAt = lookAt;
+            _mainCamera.Follow = target;
+            _mainCamera.LookAt = target;
         }
     }
 }
