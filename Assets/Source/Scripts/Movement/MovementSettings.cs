@@ -6,7 +6,8 @@ namespace SL.Movement
     public class MovementSettings : ScriptableObject
     {
         [Header("Movement")]
-        public float Speed = 3f;
+        public float Speed = 3.5f;
+        public float RunSpeed = 7f;
         public float RotationSpeedRatio = 15f;
 
         [Header("Dodge")]

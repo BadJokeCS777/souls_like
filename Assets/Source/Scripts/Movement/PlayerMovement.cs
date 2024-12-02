@@ -19,7 +19,6 @@ namespace SL.Movement
         private GameInput _gameInput;
 
         //Movement
-        private bool _isMovementPressed;
         private Vector3 _rawDirection;
         private Vector3 _direction;
         private Vector3 _movement;
@@ -47,18 +46,22 @@ namespace SL.Movement
         {
             _gameInput.Enable();
 
+            _gameInput.Player.Run.performed += OnRunning;
+            _gameInput.Player.Run.canceled += OnRunning;
+            _gameInput.Player.Dodge.performed += OnDodging;
             _gameInput.Player.Jump.started += OnJumping;
             _gameInput.Player.Jump.canceled += OnJumping;
-            _gameInput.Player.Dodge.performed += OnDodging;
         }
 
         private void OnDisable()
         {
             _gameInput.Disable();
 
+            _gameInput.Player.Run.performed -= OnRunning;
+            _gameInput.Player.Run.canceled -= OnRunning;
+            _gameInput.Player.Dodge.performed -= OnDodging;
             _gameInput.Player.Jump.started -= OnJumping;
             _gameInput.Player.Jump.canceled -= OnJumping;
-            _gameInput.Player.Dodge.performed -= OnDodging;
         }
 
         private void Update()
@@ -119,12 +122,14 @@ namespace SL.Movement
         #endregion
 
         #region OnInput
+        private void OnRunning(InputAction.CallbackContext ctx) => _animatorModel.IsRunning = ctx.ReadValueAsButton();
+
         private void OnDodging(InputAction.CallbackContext ctx)
         {
             if (CanDodge == false)
                 return;
 
-            if (_isMovementPressed)
+            if (_animatorModel.IsMoving)
                 SetUpDodge(_settings.RoleCurve, _settings.RollingDistance, _direction, _lightRollDuration);
             else
                 SetUpDodge(_settings.StepBackCurve, _settings.StepBackDistance, -_model.forward, _stepBackDuration);
@@ -159,18 +164,16 @@ namespace SL.Movement
         {
             var input = _gameInput.Player.Move.ReadValue<Vector2>();
             _rawDirection = new Vector3(input.x, 0f, input.y);
-            _isMovementPressed = input.sqrMagnitude > 0f;
+            _animatorModel.IsMoving = input.sqrMagnitude > 0f;
 
             _direction = CalculateDirection();
             _movement.x = _direction.x;
             _movement.z = _direction.z;
-
-            _animatorModel.IsMoving = _isMovementPressed;
         }
 
         private void HandleRotation()
         {
-            if (_isMovementPressed == false || _animatorModel.IsDodging)
+            if (_animatorModel.IsMoving == false || _animatorModel.IsDodging)
                 return;
 
             Quaternion targetRotation = Quaternion.LookRotation(_direction);
@@ -194,10 +197,13 @@ namespace SL.Movement
 
         private void HandleMovement()
         {
+            float speed = _animatorModel.IsRunning && _characterController.isGrounded
+                ? _settings.RunSpeed
+                : _settings.Speed;
             if (_animatorModel.IsDodging)
                 _characterController.Move(_movement);
             else
-                _characterController.Move(_settings.Speed * Time.deltaTime * _movement);
+                _characterController.Move(speed * Time.deltaTime * _movement);
         }
 
         private void HandleGravity()

@@ -38,6 +38,12 @@ namespace SL.General.Player
         public float Speed { get; set; }
         public bool IsDodging { get; set; }
 
+        private float SpeedValue =>
+            Model.IsRunning
+                ? _settings.RunningSpeed
+                : Model.IsMoving
+                    ? _settings.MovingSpeed
+                    : _settings.StayingSpeed;
         private float DodgeValue =>
             Model.IsMoving
                 ? _settings.Weight > _settings.HeavyRollThreshold
@@ -74,13 +80,16 @@ namespace SL.General.Player
                 case "IsMoving":
                     OnIsMovingChanged();
                     break;
+                case "IsRunning":
+                    OnIsMovingChanged();
+                    break;
                 case "IsDodging":
                     OnIsDodgingChanged();
                     break;
             }
         }
 
-        private void OnIsMovingChanged() => StartChangeSpeed(Model.IsMoving ? _settings.MovingSpeed : 0f);
+        private void OnIsMovingChanged() => StartChangeSpeed(SpeedValue);
 
         private void OnIsDodgingChanged()
         {

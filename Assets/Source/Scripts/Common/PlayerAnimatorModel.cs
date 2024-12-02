@@ -12,9 +12,10 @@ namespace SL.Common
         public event PropertyChangedEventHandler PropertyChanged;
 
         public bool IsMoving { get; set; }
+        public bool IsRunning { get; set; }
         public bool IsDodging { get; set; }
+        public float DodgeValue { get; set; } = 0f;
         public bool IsGrounded { get; set; } = true;
         public bool IsBonfireSitting { get; set; }
-        public float DodgeValue { get; set; } = 0f;
     }
 }
