@@ -78,4 +78,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _mainCamera: {fileID: 0}
   _playerPrefab: {fileID: 6167463515092548967, guid: cfa5a6cd462334c4ba124e888ea149f8, type: 3}
-  _spawnPoint: {fileID: 7409412096905598480}
+  _bonfiresSettings: {fileID: 11400000, guid: f36c83cfd5d045e49bff522ce1b43891, type: 2}

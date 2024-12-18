@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace SL.General
+namespace SL.Game
 {
     public class HealthChanger : MonoBehaviour
     {

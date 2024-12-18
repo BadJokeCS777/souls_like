@@ -3,13 +3,14 @@ using Loxodon.Framework.Contexts;
 using Loxodon.Framework.Execution;
 using Loxodon.Framework.Messaging;
 using SL.Common;
+using SL.Game.Bonfires;
 using SL.Services;
-using SL.UI.Views;
 using SL.UI.Models;
+using SL.UI.Views;
 using UnityEngine;
 using Zenject;
 
-namespace SL.General.Installers.MonoInstallers
+namespace SL.Game.Installers.MonoInstallers
 {
     public class GameplayInstaller : MonoInstaller
     {
@@ -24,6 +25,7 @@ namespace SL.General.Installers.MonoInstallers
             Container.Bind<Transform>().WithId(InjectionsConsts.CameraId).FromInstance(_cameraTransform).AsSingle();
             Container.Bind<PlayerAnimatorModel>().AsSingle();
             Container.Bind<HealthModel>().AsSingle();
+            Container.BindInterfacesAndSelfTo<BonfireManager>().AsSingle().NonLazy();
         }
 
         private static void BundleSetInitialization()

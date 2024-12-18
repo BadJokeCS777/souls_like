@@ -152,13 +152,14 @@ namespace SL.Movement
         private void OnFinishDodgeMessage() => _animatorModel.IsDodging = false;
         #endregion
 
-        public void SitDown()
+        public void BonfireSitDown(Vector3 bonfirePosition)
         {
+            _model.transform.LookAt(bonfirePosition);
             _animatorModel.IsBonfireSitting = true;
             enabled = false;
         }
 
-        public void StandUp() => _animatorModel.IsBonfireSitting = false;
+        public void BonfireStandUp() => _animatorModel.IsBonfireSitting = false;
 
         private void HandleMovementInput()
         {

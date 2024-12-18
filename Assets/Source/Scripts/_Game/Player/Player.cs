@@ -8,7 +8,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using Zenject;
 
-namespace SL.General.Player
+namespace SL.Game.Player
 {
     public class Player : MessengerBehaviour, IHealthOwner
     {
@@ -25,6 +25,9 @@ namespace SL.General.Player
             _gameInput = new GameInput();
             _gameInput.Enable();
             _gameInput.Player.Interaction.performed += OnInteraction;
+
+            Subscribe<BonfireInteractedMessage>(OnBonfireInteractedMessage);
+            Subscribe<BonfireLeaveMessage>(OnBonfireLeaveMessage);
         }
 
         public void ApplyDamage(float value)
@@ -35,10 +38,11 @@ namespace SL.General.Player
             _healthModel.Value -= value;
         }
 
-        public void SitDown() => _movement.SitDown();
-
-        public void StandUp() => _movement.StandUp();
-
         private void OnInteraction(InputAction.CallbackContext ctx) => Publish(new InteractionMessage());
+
+        private void OnBonfireInteractedMessage(BonfireInteractedMessage message)
+            => _movement.BonfireSitDown(message.Position);
+
+        private void OnBonfireLeaveMessage() => _movement.BonfireStandUp();
     }
 }

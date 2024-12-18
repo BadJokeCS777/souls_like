@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace SL.General.Player
+namespace SL.Game.Player
 {
     public static class PlayerAnimatorConsts
     {

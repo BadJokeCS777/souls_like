@@ -4,7 +4,7 @@ using SL.Common;
 using UnityEngine;
 using Zenject;
 
-namespace SL.General.Player
+namespace SL.Game.Player
 {
     public class PlayerAnimatorView : MonoBehaviour
     {

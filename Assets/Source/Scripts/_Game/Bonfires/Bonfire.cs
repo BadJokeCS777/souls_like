@@ -1,41 +1,42 @@
 ﻿using System;
 using System.Collections;
-using Loxodon.Framework.Messaging;
+using SL.Common;
 using SL.Interactions;
 using SL.Signals;
 using UnityEngine;
-using Zenject;
 
-namespace SL.General
+namespace SL.Game.Bonfires
 {
-    public class Bonfire : MonoBehaviour
+    public class Bonfire : MessengerBehaviour
     {
+        [SerializeField] private string _id;
+        [SerializeField] private Transform _spawnPoint;
         [SerializeField] private InteractionTrigger _trigger;
 
-        private Player.Player _player;
-        private IMessenger _messenger;
         private IDisposable _subscription;
+        private bool _playerInto;
 
-        [Inject]
-        private void Construct(IMessenger messenger)
+        public string Id => _id;
+        public Transform SpawnPoint => _spawnPoint;
+
+        private void Awake()
         {
-            _messenger = messenger;
-            _subscription = _messenger.Subscribe<InteractionMessage>(OnInteractionMessage);
+            Subscribe<InteractionMessage>(OnInteractionMessage);
         }
 
         private void OnInteractionMessage(InteractionMessage message)
         {
-            if (_player == null)
+            if(_playerInto == false)
                 return;
 
-            _player.SitDown();
+            Publish(new BonfireInteractedMessage(_id, transform.position));
             StartCoroutine(DelayedStandUp());
         }
 
         private IEnumerator DelayedStandUp()
         {
             yield return new WaitForSeconds(10f);
-            _player.StandUp();
+            Publish(new BonfireLeaveMessage(_id));
         }
 
         private void OnEnable()
@@ -50,16 +51,10 @@ namespace SL.General
             _trigger.Exited -= OnExited;
         }
 
-        private void OnDestroy() => _subscription.Dispose();
-
         private void OnEntered(Interactor interactor)
-        {
-            _player = interactor.GetComponent<Player.Player>();
-        }
+            => _playerInto = interactor.GetComponent<Player.Player>() != null;
 
         private void OnExited(Interactor interactor)
-        {
-            _player = null;
-        }
+            => _playerInto = false;
     }
 }

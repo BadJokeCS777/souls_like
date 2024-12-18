@@ -1,4 +1,4 @@
-﻿namespace SL.General
+﻿namespace SL.Game
 {
     public interface IHealthOwner
     {

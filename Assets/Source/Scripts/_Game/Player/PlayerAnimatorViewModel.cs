@@ -8,7 +8,7 @@ using SL.Common;
 using UnityEngine;
 using IAsyncResult = Loxodon.Framework.Asynchronous.IAsyncResult;
 
-namespace SL.General.Player
+namespace SL.Game.Player
 {
     [AddINotifyPropertyChangedInterface]
     [GenerateFieldProxy]
@@ -53,21 +53,15 @@ namespace SL.General.Player
 
         public void Dispose() => Model.PropertyChanged -= OnModelPropertyChanged;
 
-        private void StartChangeSpeed(float newValue)
-        {
-            _speedChanging?.Cancel();
-            _speedChanging = _coroutineExecutor.RunOnCoroutine(SpeedChanging(newValue));
-        }
-
-        private IEnumerator SpeedChanging(float targetValue)
+        private IEnumerator SpeedChanging()
         {
             float maxDelta = 0f;
             float startValue = Speed;
+            float targetValue = SpeedValue;
 
             while (Mathf.Approximately(Speed, targetValue) == false)
             {
                 yield return null;
-
                 maxDelta += Time.deltaTime / _settings.MovingChangeDuration;
                 Speed = Mathf.MoveTowards(startValue, targetValue, maxDelta);
             }
@@ -89,7 +83,11 @@ namespace SL.General.Player
             }
         }
 
-        private void OnIsMovingChanged() => StartChangeSpeed(SpeedValue);
+        private void OnIsMovingChanged()
+        {
+            _speedChanging?.Cancel();
+            _speedChanging = _coroutineExecutor.RunOnCoroutine(SpeedChanging());
+        }
 
         private void OnIsDodgingChanged()
         {
