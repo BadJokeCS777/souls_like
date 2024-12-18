@@ -5,6 +5,7 @@ using BindingProxy;
 using Loxodon.Framework.Execution;
 using PropertyChanged;
 using SL.Common;
+using SL.Game.Settings;
 using UnityEngine;
 using IAsyncResult = Loxodon.Framework.Asynchronous.IAsyncResult;
 

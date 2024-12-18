@@ -1,6 +1,7 @@
 ﻿using Loxodon.Framework.Binding;
 using Loxodon.Framework.Execution;
 using SL.Common;
+using SL.Game.Settings;
 using UnityEngine;
 using Zenject;
 

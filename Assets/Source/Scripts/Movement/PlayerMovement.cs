@@ -76,6 +76,14 @@ namespace SL.Movement
         }
 
         #region Initialization
+
+        public void Init(SpawnPoint spawnPoint)
+        {
+            Vector3 move = spawnPoint.Position - _model.position;
+            _characterController.Move(move);
+            _model.rotation = Quaternion.Euler(spawnPoint.Rotation);
+        }
+
         [Inject]
         private void Construct([Inject(Id = InjectionsConsts.CameraId)]Transform cameraTransform,
             PlayerAnimatorModel animatorModel)

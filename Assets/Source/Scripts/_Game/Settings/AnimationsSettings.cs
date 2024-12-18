@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace SL.Game.Player
+namespace SL.Game.Settings
 {
     [CreateAssetMenu(menuName = "Settings/Animations", fileName = "AnimationsSettings")]
     public class AnimationsSettings : ScriptableObject

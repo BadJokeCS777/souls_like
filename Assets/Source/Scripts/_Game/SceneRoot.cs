@@ -1,12 +1,15 @@
 using System.Collections.Generic;
 using Cinemachine;
+using SL.Common;
 using SL.Game.Bonfires;
+using SL.Game.Settings;
+using SL.Signals;
 using UnityEngine;
 using Zenject;
 
 namespace SL.Game
 {
-    public class SceneRoot : MonoBehaviour
+    public class SceneRoot : MessengerBehaviour
     {
         [SerializeField] private CinemachineVirtualCameraBase _mainCamera;
         [SerializeField] private Player.Player _playerPrefab;
@@ -27,16 +30,12 @@ namespace SL.Game
 
         private void Start()
         {
-            //TODO: add respawn when HP == 0
-            SpawnPoint spawnPoint = _bonfiresSettings.GetPoint(_bonfireManager.LastBonfireId);
-
-            _player = _container.InstantiatePrefabForComponent<Player.Player>(
-                _playerPrefab.gameObject,
-                spawnPoint.Position,
-                Quaternion.Euler(spawnPoint.Rotation),
-                null);
+            _player = _container.InstantiatePrefabForComponent<Player.Player>(_playerPrefab.gameObject);
+            _player.Init(_bonfiresSettings.GetPoint(_bonfireManager.LastBonfireId));
 
             InitCameras(_player.transform);
+
+            Subscribe<ZeroHealthMessage>(OnZeroHealthMessage);
         }
 
         private void InitCameras(Transform target)
@@ -44,5 +43,8 @@ namespace SL.Game
             _mainCamera.Follow = target;
             _mainCamera.LookAt = target;
         }
+
+        private void OnZeroHealthMessage()
+            => _player.Init(_bonfiresSettings.GetPoint(_bonfireManager.LastBonfireId));
     }
 }

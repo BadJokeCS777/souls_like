@@ -30,6 +30,13 @@ namespace SL.Game.Player
             Subscribe<BonfireLeaveMessage>(OnBonfireLeaveMessage);
         }
 
+        public void Init(SpawnPoint spawnPoint)
+        {
+            _healthModel.Value = _healthModel.MaxValue;
+            _movement.Init(spawnPoint);
+            //transform.SetLocalPositionAndRotation(spawnPoint.Position, Quaternion.Euler(spawnPoint.Rotation));
+        }
+
         public void ApplyDamage(float value)
         {
             if (value < 0f)

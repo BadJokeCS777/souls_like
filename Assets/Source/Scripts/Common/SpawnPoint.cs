@@ -1,7 +1,7 @@
 ﻿using System;
 using UnityEngine;
 
-namespace SL.Game
+namespace SL.Common
 {
     [Serializable]
     public struct SpawnPoint
