@@ -38,11 +38,13 @@ namespace SL.Game.Player
             _healthModel.Value -= value;
         }
 
-        private void OnInteraction(InputAction.CallbackContext ctx) => Publish(new InteractionMessage());
+        private void OnInteraction(InputAction.CallbackContext ctx)
+            => Publish(new InteractionMessage());
 
         private void OnBonfireInteractedMessage(BonfireInteractedMessage message)
             => _movement.BonfireSitDown(message.Position);
 
-        private void OnBonfireLeaveMessage() => _movement.BonfireStandUp();
+        private void OnBonfireLeaveMessage()
+            => _movement.BonfireStandUp();
     }
 }

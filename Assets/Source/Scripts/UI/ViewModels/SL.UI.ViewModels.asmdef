@@ -6,6 +6,7 @@
         "Loxodon.Framework.Binding.Weaving",
         "Loxodon.Framework.Fody",
         "Zenject",
+        "SL.Common",
         "SL.Interactions",
         "SL.Signals",
         "SL.UI.Models"

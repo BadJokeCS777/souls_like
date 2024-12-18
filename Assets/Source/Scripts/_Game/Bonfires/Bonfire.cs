@@ -14,7 +14,6 @@ namespace SL.Game.Bonfires
         [SerializeField] private InteractionTrigger _trigger;
 
         private IDisposable _subscription;
-        private bool _playerInto;
 
         public string Id => _id;
         public Transform SpawnPoint => _spawnPoint;
@@ -26,7 +25,7 @@ namespace SL.Game.Bonfires
 
         private void OnInteractionMessage(InteractionMessage message)
         {
-            if(_playerInto == false)
+            if (_trigger.IsInteractorLooking == false)
                 return;
 
             Publish(new BonfireInteractedMessage(_id, transform.position));
@@ -38,23 +37,5 @@ namespace SL.Game.Bonfires
             yield return new WaitForSeconds(10f);
             Publish(new BonfireLeaveMessage(_id));
         }
-
-        private void OnEnable()
-        {
-            _trigger.Entered += OnEntered;
-            _trigger.Exited += OnExited;
-        }
-
-        private void OnDisable()
-        {
-            _trigger.Entered -= OnEntered;
-            _trigger.Exited -= OnExited;
-        }
-
-        private void OnEntered(Interactor interactor)
-            => _playerInto = interactor.GetComponent<Player.Player>() != null;
-
-        private void OnExited(Interactor interactor)
-            => _playerInto = false;
     }
 }

@@ -9,7 +9,7 @@ namespace SL.UI.ViewModels
     {
         private readonly List<IDisposable> _subscriptions = new();
 
-        public ViewModelBase(IMessenger messenger) : base(messenger) { }
+        protected ViewModelBase(IMessenger messenger) : base(messenger) { }
 
         public void Initialize() => OnInitialize();
 
