@@ -2,7 +2,7 @@
 <Weavers xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<AssemblyNames>
 		<Item>SL.Common</Item>
-		<Item>SL.General</Item>
+		<Item>SL.Game</Item>
 		<Item>SL.UI</Item>
 		<Item>SL.UI.ViewModels</Item>
 		<Item>SL.UI.Models</Item>
