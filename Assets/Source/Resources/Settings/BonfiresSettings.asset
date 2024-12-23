@@ -12,11 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bed611e4cdbd40afa60fa14b2941ad1c, type: 3}
   m_Name: BonfiresSettings
   m_EditorClassIdentifier: 
-  StartPoint:
+  _startPoint:
     Position: {x: 0, y: 0, z: 0}
     Rotation: {x: 0, y: 0, z: 0}
   _bonfireDatas:
   - Id: Demo
     SpawnPoint:
-      Position: {x: 4.19586, y: 0, z: 6.508502}
-      Rotation: {x: -0, y: 293.67184, z: 0}
+      Position: {x: 6, y: 0, z: 6}
+      Rotation: {x: -0, y: 0, z: 0}

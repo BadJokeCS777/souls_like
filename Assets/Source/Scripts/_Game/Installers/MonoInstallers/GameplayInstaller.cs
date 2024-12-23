@@ -25,6 +25,7 @@ namespace SL.Game.Installers.MonoInstallers
             Container.Bind<Transform>().WithId(InjectionsConsts.CameraId).FromInstance(_cameraTransform).AsSingle();
             Container.Bind<PlayerAnimatorModel>().AsSingle();
             Container.Bind<HealthModel>().AsSingle();
+            Container.Bind<StatsModel>().AsSingle();
             Container.BindInterfacesAndSelfTo<BonfireManager>().AsSingle().NonLazy();
         }
 
