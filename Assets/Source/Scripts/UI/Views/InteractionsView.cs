@@ -1,5 +1,6 @@
 ﻿using Loxodon.Framework.Binding.Builder;
 using SL.UI.ViewModels;
+using SL.UI.Views.Base;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;

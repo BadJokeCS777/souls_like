@@ -4,7 +4,7 @@ using Loxodon.Framework.ViewModels;
 using SL.Services;
 using Zenject;
 
-namespace SL.UI.Views
+namespace SL.UI.Views.Base
 {
     public abstract class DiFactoryBase
     {

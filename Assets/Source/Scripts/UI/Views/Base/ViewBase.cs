@@ -3,11 +3,11 @@ using Loxodon.Framework.Binding;
 using Loxodon.Framework.Binding.Builder;
 using Loxodon.Framework.Views;
 using SL.Services;
-using SL.UI.ViewModels;
+using SL.UI.ViewModels.Base;
 using UnityEngine;
 using Zenject;
 
-namespace SL.UI.Views
+namespace SL.UI.Views.Base
 {
     public abstract class ViewBase<TView, TViewModel> : UIView
         where TView : ViewBase<TView, TViewModel>

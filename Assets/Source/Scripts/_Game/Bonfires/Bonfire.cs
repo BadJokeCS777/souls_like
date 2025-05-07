@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using SL.Common;
 using SL.Interactions;
 using SL.Signals;
@@ -13,9 +12,12 @@ namespace SL.Game.Bonfires
         [SerializeField] private Transform _spawnPoint;
         [SerializeField] private InteractionTrigger _trigger;
 
-        private IDisposable _subscription;
+        public string Id
+        {
+            get => _id;
+            set => _id = value;
+        }
 
-        public string Id => _id;
         public Transform SpawnPoint => _spawnPoint;
 
         private void Awake()

@@ -14,5 +14,11 @@ namespace SL.Common
             Position = transform.position;
             Rotation = transform.eulerAngles;
         }
+
+        public SpawnPoint(Vector3 position, Vector3 rotation)
+        {
+            Position = position;
+            Rotation = rotation;
+        }
     }
 }

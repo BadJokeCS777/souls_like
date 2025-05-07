@@ -8,7 +8,7 @@ using SL.Services;
 using SL.UI.ViewModels;
 using Zenject;
 
-namespace SL.UI.Views
+namespace SL.UI.Views.Base
 {
     public abstract class WindowBase<TView, TViewModel> : Window
         where TViewModel : WindowViewModelBase

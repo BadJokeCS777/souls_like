@@ -8,6 +8,7 @@
         "Loxodon.Log",
         "Unity.TextMeshPro",
         "Zenject",
+        "SL.Common",
         "SL.Interactions",
         "SL.Services",
         "SL.Signals",

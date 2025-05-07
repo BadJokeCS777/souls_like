@@ -1,7 +1,7 @@
 using Loxodon.Framework.Views;
 using UnityEngine;
 
-namespace SL.UI.Views
+namespace SL.UI.Views.Base
 {
     public class WindowManger : MonoBehaviour
     {
