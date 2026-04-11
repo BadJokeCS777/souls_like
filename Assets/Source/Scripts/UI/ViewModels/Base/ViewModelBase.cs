@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Loxodon.Framework.Messaging;
 using Zenject;
 
-namespace SL.UI.ViewModels
+namespace SL.UI.ViewModels.Base
 {
     public abstract class ViewModelBase : Loxodon.Framework.ViewModels.ViewModelBase, IInitializable
     {

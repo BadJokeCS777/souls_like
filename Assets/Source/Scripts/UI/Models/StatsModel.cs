@@ -1,4 +1,5 @@
 using BindingProxy;
+using Loxodon.Framework.Observables;
 using PropertyChanged;
 
 namespace SL.UI.Models
@@ -15,5 +16,7 @@ namespace SL.UI.Models
         public int Intelligence { get; set; }
         public int Faith { get; set; }
         public int Magic { get; set; }
+
+        public ObservableList<string> Stats { get; set; } = new();
     }
 }

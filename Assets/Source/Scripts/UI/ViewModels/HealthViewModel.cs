@@ -1,8 +1,10 @@
-﻿using BindingProxy;
+﻿using System.ComponentModel;
+using BindingProxy;
 using Loxodon.Framework.Messaging;
 using PropertyChanged;
 using SL.Signals;
 using SL.UI.Models;
+using SL.UI.ViewModels.Base;
 
 namespace SL.UI.ViewModels
 {
@@ -22,9 +24,9 @@ namespace SL.UI.ViewModels
 
         protected override void OnInitialize()
         {
-            _model.StateChanged += OnStateChanged;
-            Subscribe<RestorePlayerMessage>(OnRestorePlayerMessage);
+            _model.PropertyChanged += OnModelPropertyChanged;
             OnStateChanged();
+            Subscribe<RestorePlayerMessage>(OnRestorePlayerMessage);
         }
 
         protected override void Dispose(bool disposing)
@@ -33,7 +35,18 @@ namespace SL.UI.ViewModels
 
             if (disposing == false)
                 return;
-            _model.StateChanged -= OnStateChanged;
+            _model.PropertyChanged -= OnModelPropertyChanged;
+        }
+
+        private void OnModelPropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            switch (e.PropertyName)
+            {
+                case nameof(_model.Value):
+                case nameof(_model.MaxValue):
+                    OnStateChanged();
+                    break;
+            }
         }
 
         private void OnStateChanged()

@@ -1,30 +1,35 @@
+using Loxodon.Framework.Observables;
+using SL.Stats;
 using UnityEngine;
 using Zenject;
 
-namespace SL.Stats
+namespace SL.UI.Models.Stats
 {
     public class StatsExample : MonoBehaviour
     {
-        private UI.Models.StatsModel _uiModel;
-        private StatsModel _stats;
-        private StatsSaver _saver;
+        private StatsModel _uiModel;
+        private SL.Stats.StatsModel _stats;
+        private StatsStorage _storage;
 
         [Inject]
-        private void Construct(UI.Models.StatsModel uiModel)
+        private void Construct(StatsModel uiModel, StatsStorage storage)
         {
             _uiModel = uiModel;
+            _storage = storage;
         }
 
         private void Start()
         {
-            _saver = new StatsSaver();
             Load();
+
+            foreach (string id in _storage.StatsIds)
+                _uiModel.Stats.Add(id);
         }
 
         [ContextMenu(nameof(Load))]
         private void Load()
         {
-            _stats = _saver.Load();
+            _stats = StatsSaver.Load();
             _uiModel.Vitality = _stats.Vitality;
             _uiModel.Endurance = _stats.Endurance;
             _uiModel.Strength = _stats.Strength;
@@ -32,6 +37,10 @@ namespace SL.Stats
             _uiModel.Intelligence = _stats.Intelligence;
             _uiModel.Faith = _stats.Faith;
             _uiModel.Magic = _stats.Magic;
+
+            var statsList = StatsSaver.LoadList();
+            foreach (StatModel statModel in statsList)
+                _storage.Get(statModel.Name).Value = statModel.Value;
         }
 
         [ContextMenu(nameof(Save))]
@@ -44,7 +53,9 @@ namespace SL.Stats
             _stats.Intelligence = _uiModel.Intelligence;
             _stats.Faith = _uiModel.Faith;
             _stats.Magic = _uiModel.Magic;
-            _saver.Save(_stats);
+            StatsSaver.Save(_stats);
+
+            _storage.Save();
         }
 
         [ContextMenu(nameof(IncreaseAllStats))]

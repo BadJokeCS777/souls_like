@@ -5,6 +5,7 @@ using Loxodon.Framework.Messaging;
 using PropertyChanged;
 using SL.Interactions;
 using SL.Signals;
+using SL.UI.ViewModels.Base;
 using UnityEngine;
 
 namespace SL.UI.ViewModels

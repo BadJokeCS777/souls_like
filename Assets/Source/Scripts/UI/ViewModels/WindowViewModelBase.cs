@@ -2,6 +2,7 @@ using Loxodon.Framework.Commands;
 using Loxodon.Framework.Interactivity;
 using Loxodon.Framework.Messaging;
 using Loxodon.Log;
+using SL.UI.ViewModels.Base;
 
 namespace SL.UI.ViewModels
 {

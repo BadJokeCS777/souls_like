@@ -1,7 +1,10 @@
 {
     "name": "SL.UI.Models",
     "rootNamespace": "SL",
-    "references": [],
+    "references": [
+        "Loxodon.Framework",
+        "SL.Common"
+    ],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,

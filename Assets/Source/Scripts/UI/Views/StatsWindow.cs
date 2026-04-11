@@ -1,5 +1,6 @@
 using Loxodon.Framework.Binding.Builder;
 using SL.UI.ViewModels;
+using SL.UI.Views.Base;
 using TMPro;
 using UnityEngine;
 
@@ -14,6 +15,9 @@ namespace SL.UI.Views
         [SerializeField] private TMP_Text _intelligenceValue;
         [SerializeField] private TMP_Text _faithValue;
         [SerializeField] private TMP_Text _magicValue;
+
+        [SerializeField] private StatView[] _statViews;
+        [SerializeField] private CollectionView _collection;
 
         protected override void Bind(BindingSet<StatsWindow, StatsWindowViewModel> bindingSet)
         {
@@ -44,6 +48,14 @@ namespace SL.UI.Views
             bindingSet.Bind(_magicValue)
                 .For(v => v.text)
                 .To(vm => vm.Model.Magic)
+                .OneWay();
+
+            if (_collection == null)
+                return;
+
+            bindingSet.Bind(_collection)
+                .For(v => v.Items)
+                .To(vm => vm.Model.Stats)
                 .OneWay();
         }
     }

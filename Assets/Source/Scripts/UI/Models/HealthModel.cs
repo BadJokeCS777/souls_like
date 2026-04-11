@@ -1,4 +1,4 @@
-﻿using System;
+﻿using System.ComponentModel;
 using BindingProxy;
 using PropertyChanged;
 
@@ -7,12 +7,9 @@ namespace SL.UI.Models
     [AddINotifyPropertyChangedInterface]
     [GenerateFieldProxy]
     [GeneratePropertyProxy]
-    public class HealthModel
+    public class HealthModel : INotifyPropertyChanged
     {
-        private float _value;
-        private float _maxValue;
-
-        public event Action StateChanged;
+        public event PropertyChangedEventHandler PropertyChanged;
 
         public HealthModel(float value = 100f)
         {
@@ -20,24 +17,8 @@ namespace SL.UI.Models
             MaxValue = value;
         }
 
-        public float MaxValue
-        {
-            get => _maxValue;
-            set
-            {
-                _maxValue = value;
-                StateChanged?.Invoke();
-            }
-        }
+        public float MaxValue { get; set; }
 
-        public float Value
-        {
-            get => _value;
-            set
-            {
-                _value = value;
-                StateChanged?.Invoke();
-            }
-        }
+        public float Value { get; set; }
     }
 }
